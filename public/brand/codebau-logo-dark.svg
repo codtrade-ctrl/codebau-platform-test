@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 120" width="100%" height="100%">
+  <!-- Symbol Mark (Deep Navy & Teal) -->
+  <g transform="translate(10, 10)">
+    <!-- Base block with rx=22 -->
+    <rect x="0" y="0" width="100" height="100" rx="22" fill="#0D1B2A" />
+    <rect x="4" y="4" width="92" height="92" rx="18" fill="none" stroke="#00A878" stroke-width="2.5" />
+    
+    <!-- Geometric C / B construction beam motif in Teal & White -->
+    <path d="M 68 32 L 40 32 C 32 32 28 36 28 44 L 28 56 C 28 64 32 68 40 68 L 68 68" fill="none" stroke="#00A878" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 68 32 L 40 32 C 32 32 28 36 28 44 L 28 56 C 28 64 32 68 40 68 L 68 68" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+    
+    <path d="M 48 32 L 68 32 C 73 32 76 35 76 39.5 C 76 44 73 47 68 47 L 48 47 L 70 47 C 75 47 78 50.5 78 55.5 C 78 60.5 75 64 70 64 L 48 64" fill="none" stroke="#00A878" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+
+  <!-- Typography for Light Backgrounds -->
+  <text x="130" y="65" font-family="'Manrope', 'Inter', system-ui, sans-serif" font-weight="900" font-size="44" letter-spacing="-1" fill="#0D1B2A">
+    CODE<tspan fill="#00A878">BAU</tspan>
+  </text>
+  
+  <text x="132" y="92" font-family="'Inter', system-ui, sans-serif" font-weight="700" font-size="12" letter-spacing="2.5" fill="#5C6670">
+    CONSTRUIEȘTE CU ÎNCREDERE
+  </text>
+</svg>

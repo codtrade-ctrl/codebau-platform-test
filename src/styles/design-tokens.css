@@ -1,0 +1,50 @@
+:root {
+  --cb-navy-950: #0D1B2A;
+  --cb-navy-900: #13283A;
+  --cb-navy-800: #1A3448;
+
+  --cb-teal-500: #00A878;
+  --cb-teal-700: #087F5B;
+  --cb-teal-800: #066B4D;
+  --cb-teal-100: #DDF5EE;
+  --cb-teal-50: #EFFAF6;
+
+  --cb-white: #FFFFFF;
+  --cb-canvas: #F4F7F6;
+  --cb-surface: #FFFFFF;
+  --cb-surface-alt: #E9ECEF;
+  --cb-surface-soft: #F8FAF9;
+
+  --cb-border: #D9E2E1;
+  --cb-border-strong: #BCC9C6;
+
+  --cb-text-primary: #0D1B2A;
+  --cb-text-secondary: #5C6670;
+  --cb-text-muted: #6B7177;
+  --cb-text-inverse: #FFFFFF;
+
+  --cb-amber-500: #F4B400;
+  --cb-amber-100: #FFF4CC;
+
+  --cb-success: #087F5B;
+  --cb-success-bg: #DDF5EE;
+
+  --cb-warning: #A66B00;
+  --cb-warning-bg: #FFF4CC;
+
+  --cb-error: #C63B3B;
+  --cb-error-bg: #FCE8E8;
+
+  --cb-info: #2563A6;
+  --cb-info-bg: #E7F0FA;
+
+  --header-total-height: 124px;
+  --mobile-nav-height: 64px;
+  --product-buybar-height: 72px;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --header-total-height: 110px;
+  }
+}

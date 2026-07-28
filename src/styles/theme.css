@@ -1,0 +1,67 @@
+@import "./design-tokens.css";
+
+@theme {
+  --color-cb-navy-950: var(--cb-navy-950);
+  --color-cb-navy-900: var(--cb-navy-900);
+  --color-cb-navy-800: var(--cb-navy-800);
+  
+  --color-cb-teal-500: var(--cb-teal-500);
+  --color-cb-teal-700: var(--cb-teal-700);
+  --color-cb-teal-800: var(--cb-teal-800);
+  --color-cb-teal-100: var(--cb-teal-100);
+  --color-cb-teal-50: var(--cb-teal-50);
+
+  --color-cb-white: var(--cb-white);
+  --color-cb-canvas: var(--cb-canvas);
+  --color-cb-surface: var(--cb-surface);
+  --color-cb-surface-alt: var(--cb-surface-alt);
+  --color-cb-surface-soft: var(--cb-surface-soft);
+
+  --color-cb-border: var(--cb-border);
+  --color-cb-border-strong: var(--cb-border-strong);
+
+  --color-cb-text-primary: var(--cb-text-primary);
+  --color-cb-text-secondary: var(--cb-text-secondary);
+  --color-cb-text-muted: var(--cb-text-muted);
+  --color-cb-text-inverse: var(--cb-text-inverse);
+
+  --color-cb-amber-500: var(--cb-amber-500);
+  --color-cb-amber-100: var(--cb-amber-100);
+
+  --color-cb-success: var(--cb-success);
+  --color-cb-success-bg: var(--cb-success-bg);
+
+  --color-cb-warning: var(--cb-warning);
+  --color-cb-warning-bg: var(--cb-warning-bg);
+
+  --color-cb-error: var(--cb-error);
+  --color-cb-error-bg: var(--cb-error-bg);
+
+  --color-cb-info: var(--cb-info);
+  --color-cb-info-bg: var(--cb-info-bg);
+
+  --font-heading: 'Manrope', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background-color: var(--cb-canvas);
+  color: var(--cb-text-primary);
+  font-family: var(--font-sans);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Card Shadows */
+.cb-shadow-sm {
+  box-shadow: 0 2px 8px rgba(13, 27, 42, 0.06);
+}
+
+.cb-shadow-md {
+  box-shadow: 0 10px 30px rgba(13, 27, 42, 0.10);
+}
+
+.cb-shadow-lg {
+  box-shadow: 0 18px 50px rgba(13, 27, 42, 0.16);
+}

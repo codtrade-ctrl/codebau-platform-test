@@ -1,0 +1,20 @@
+@import "tailwindcss";
+@import "./styles/theme.css";
+
+html {
+  scroll-padding-top: var(--header-total-height);
+}
+
+.scroll-mt-header {
+  scroll-margin-top: var(--header-total-height);
+}
+
+/* Hide scrollbar for clean horizontal scrolling */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+

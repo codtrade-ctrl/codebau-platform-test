@@ -1,0 +1,6 @@
+{
+  "name": "CodeBau",
+  "description": "Ecosistem digital pentru materiale de construcții, calculatoare de proiecte, servicii și meșteri verificați",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
