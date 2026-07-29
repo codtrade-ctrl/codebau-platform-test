@@ -520,6 +520,7 @@ export interface Article {
   featured?: boolean;
   publishedAt: string;
   updatedAt: string;
+  createdAt?: string;
   readingTime: string; // e.g. "5 min"
   relatedProductIds?: string[];
   relatedSolutionIds?: string[];

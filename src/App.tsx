@@ -31,9 +31,11 @@ import { ArticleDetailPage } from './components/ArticleDetailPage';
 import { AdminArticlesView } from './components/AdminArticlesView';
 import { getProductBySlug, getProductSlug } from './utils/formatters';
 import { defaultCartRepository, getCartSessionId, logTestEvent } from './services/cartRepository';
+import { useLanguage } from './utils/i18n';
 import { Search, Sparkles, Filter, Calculator, Wrench, Building2, Layers, ShoppingCart, Check, ShieldCheck, ArrowRight, Store, Clock, Phone, MapPin, BookOpen, CheckCircle2, Truck, UserCheck, Tag } from 'lucide-react';
 
 export default function App() {
+  const { t } = useLanguage();
   // Global Application State
   const [currentRole, setCurrentRole] = useState<UserRole>('client');
   const [selectedStore, setSelectedStore] = useState<string>('CodeBau Cahul');
@@ -413,35 +415,72 @@ export default function App() {
         {(activeTab === 'catalog' || activeTab === 'home') && (
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8 animate-in fade-in duration-300">
             
-            {/* Hero Interactive Banner (Light Background as per CodeBau DS v1.1) */}
+            {/* Hero Interactive Banner (CodeBau Design Principles) */}
             <div className="bg-gradient-to-br from-white via-[#EFFAF6] to-[#E9ECEF] border border-[#D9E2E1] px-6 py-7 sm:p-8 lg:p-10 rounded-3xl text-[#0D1B2A] relative overflow-hidden shadow-sm">
               <div className="absolute top-0 right-0 w-96 h-96 bg-[#00A878]/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
               
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center relative z-10">
-                {/* Left Column: Text, Badge, CTA Buttons, Advantages */}
+                {/* Left Column: Text, Intent Selector, CTA Buttons, Advantages */}
                 <div className="lg:col-span-7 space-y-4 sm:space-y-5">
                   
                   {/* 1. Badge */}
                   <div className="inline-flex items-center gap-2 bg-[#DDF5EE] text-[#087F5B] text-xs font-bold px-3.5 py-1.5 rounded-full border border-[#00A878]/30 shadow-sm">
                     <span className="w-2 h-2 rounded-full bg-[#00A878] animate-pulse"></span>
-                    <span>Materiale • Soluții • Livrare • Meșteri</span>
+                    <span>Sudul Moldovei • Magazine Cahul, Cantemir, Vulcănești, Taraclia</span>
                   </div>
 
                   {/* 2. Main Commercial Title */}
                   <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight text-[#0D1B2A] max-w-2xl">
-                    Tot ce ai nevoie pentru construcții și renovări
-                    <span className="block text-[#087F5B] font-black mt-1">într-un singur loc.</span>
+                    {t.heroTitle1}
+                    <span className="block text-[#087F5B] font-black mt-1">{t.heroTitle2}</span>
                   </h1>
 
                   {/* 3. Description */}
                   <p className="text-[#5C6670] text-xs sm:text-sm font-medium leading-relaxed max-w-xl">
-                    Alege materialele potrivite, verifică stocul în magazinele CodeBau, calculează necesarul și comandă cu livrare sau ridicare din magazin.
+                    {t.heroSubtitle}
                   </p>
 
-                  {/* 4, 5, 6. Commercial Actions Buttons */}
-                  <div className="pt-1 space-y-2.5">
+                  {/* Intent Selector: "Ce vrei să faci?" */}
+                  <div className="space-y-2 pt-1">
+                    <div className="text-xs font-black uppercase text-[#0D1B2A] tracking-wider flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-[#00A878]" />
+                      <span>{t.whatDoYouWantToDo}</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {[
+                        { label: t.intentBuyProducts, action: () => { setActiveTab('catalog'); document.getElementById('products-catalog-section')?.scrollIntoView({ behavior: 'smooth' }); } },
+                        { label: t.intentBathroom, action: () => setActiveTab('solutions') },
+                        { label: t.intentPainting, action: () => setActiveTab('solutions') },
+                        { label: t.intentTile, action: () => setActiveTab('solutions') },
+                        { label: t.intentFacade, action: () => setActiveTab('solutions') },
+                        { label: t.intentRoof, action: () => setActiveTab('solutions') },
+                        { label: t.intentMaterialList, action: () => setIsAiModalOpen(true) },
+                        { label: t.intentCompanyQuote, action: () => setActiveTab('b2b') },
+                      ].map((intent, i) => (
+                        <button
+                          key={i}
+                          onClick={intent.action}
+                          className="bg-white hover:bg-[#087F5B] hover:text-white text-[#0D1B2A] border border-[#D9E2E1] hover:border-[#087F5B] text-xs font-bold px-3 py-1.5 rounded-xl transition-all cursor-pointer shadow-2xs"
+                        >
+                          {intent.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Commercial Actions Buttons */}
+                  <div className="pt-2 space-y-2.5">
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
-                      {/* Button 1: Vezi produsele */}
+                      {/* Button 1: Începe un proiect */}
+                      <button
+                        onClick={() => setActiveTab('solutions')}
+                        className="w-full sm:w-auto bg-[#087F5B] hover:bg-[#066B4D] text-white font-extrabold px-6 py-3.5 rounded-xl text-xs shadow-md flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer"
+                      >
+                        <span>{t.startProject}</span>
+                        <ArrowRight className="w-4 h-4 text-white" />
+                      </button>
+
+                      {/* Button 2: Vezi produsele */}
                       <button
                         onClick={() => {
                           setActiveTab('catalog');
@@ -449,18 +488,9 @@ export default function App() {
                             document.getElementById('products-catalog-section')?.scrollIntoView({ behavior: 'smooth' });
                           }, 50);
                         }}
-                        className="w-full sm:w-auto bg-[#087F5B] hover:bg-[#066B4D] text-white font-extrabold px-6 py-3.5 rounded-xl text-xs shadow-md flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer"
-                      >
-                        <span>Vezi produsele</span>
-                        <ArrowRight className="w-4 h-4 text-white" />
-                      </button>
-
-                      {/* Button 2: Începe un proiect */}
-                      <button
-                        onClick={() => setActiveTab('solutions')}
                         className="w-full sm:w-auto bg-white hover:bg-[#F8FAF9] text-[#0D1B2A] font-extrabold px-6 py-3.5 rounded-xl text-xs border-2 border-[#0D1B2A] shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer"
                       >
-                        <span>Începe un proiect</span>
+                        <span>{t.viewProducts}</span>
                       </button>
                     </div>
 
@@ -471,24 +501,24 @@ export default function App() {
                         className="text-xs text-[#087F5B] hover:text-[#066B4D] font-extrabold underline underline-offset-4 flex items-center gap-1.5 transition-colors cursor-pointer"
                       >
                         <Calculator className="w-3.5 h-3.5 text-[#087F5B]" />
-                        <span>Calculează necesarul de materiale</span>
+                        <span>{t.calculateMaterials}</span>
                       </button>
                     </div>
                   </div>
 
-                  {/* 7. Advantages (placed after buttons on mobile) */}
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-6 text-xs text-[#0D1B2A] font-bold pt-2 border-t border-[#D9E2E1] sm:border-0">
+                  {/* Advantages */}
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-6 text-xs text-[#0D1B2A] font-bold pt-2 border-t border-[#D9E2E1]">
                     <div className="flex items-center gap-1.5">
                       <CheckCircle2 className="w-4 h-4 text-[#00A878] flex-shrink-0" />
-                      <span>Stoc actualizat în timp real</span>
+                      <span>{t.realtimeStock}</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <Truck className="w-4 h-4 text-[#00A878] flex-shrink-0" />
-                      <span>Livrare în sudul Moldovei</span>
+                      <span>{t.deliverySouthShort}</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <UserCheck className="w-4 h-4 text-[#00A878] flex-shrink-0" />
-                      <span>Consultanță pentru proiectul tău</span>
+                      <span>{t.projectConsulting}</span>
                     </div>
                   </div>
 
@@ -499,16 +529,16 @@ export default function App() {
                   <div className="relative rounded-2xl overflow-hidden border border-[#D9E2E1] shadow-lg group">
                     <img 
                       src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=800&q=80" 
-                      alt="Renovări și materiale de construcții CodeBau" 
-                      className="w-full h-72 lg:h-80 object-cover object-center transform group-hover:scale-105 transition-transform duration-500" 
+                      alt="Renovări și materiale de construcții CodeBau Cahul" 
+                      className="w-full h-80 object-cover object-center transform group-hover:scale-105 transition-transform duration-500" 
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#0D1B2A]/80 via-transparent to-transparent"></div>
                     
-                    {/* Updated Card Overlay Text */}
+                    {/* Card Overlay Text */}
                     <div className="absolute bottom-3 left-3 right-3 bg-white/95 backdrop-blur-md border border-[#D9E2E1] p-3 rounded-xl flex items-center justify-between text-xs shadow-md">
                       <div>
                         <p className="font-extrabold text-[#0D1B2A] text-xs">Stoc verificat în magazinele CodeBau</p>
-                        <p className="text-[11px] text-[#5C6670] font-medium">Comandă cu livrare sau ridicare din magazin.</p>
+                        <p className="text-[11px] text-[#5C6670] font-medium">Comandă online cu livrare în tot sudul Moldovei.</p>
                       </div>
                       <span className="bg-[#EFFAF6] text-[#00A878] font-extrabold text-[10px] px-2.5 py-1 rounded-full border border-[#00A878]/30 shrink-0 ml-2">
                         Stoc live
@@ -517,6 +547,52 @@ export default function App() {
                   </div>
                 </div>
 
+              </div>
+            </div>
+
+            {/* SECȚIUNEA 2: 11 CATEGORII PRINCIPALE */}
+            <div className="space-y-4">
+              <div className="flex items-end justify-between border-b border-[#D9E2E1] pb-3">
+                <div>
+                  <h2 className="text-xl sm:text-2xl font-black text-[#0D1B2A] tracking-tight">{t.mainCategoriesTitle}</h2>
+                  <p className="text-xs text-[#5C6670] font-medium">{t.mainCategoriesSubtitle}</p>
+                </div>
+                <button
+                  onClick={() => setActiveTab('catalog')}
+                  className="text-xs font-bold text-[#087F5B] hover:underline hidden sm:flex items-center gap-1 cursor-pointer"
+                >
+                  <span>{t.allCategories}</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                {[
+                  { name: t.catMasonry, icon: '🧱', category: 'Adezivi & Grunduri' },
+                  { name: t.catFinishes, icon: '🏗️', category: 'Adezivi & Grunduri' },
+                  { name: t.catTiles, icon: '🔲', category: 'Plăci Ceramice & Parchet' },
+                  { name: t.catPaints, icon: '🎨', category: 'Vopsele & Tencuieli' },
+                  { name: t.catInsulation, icon: '🧱', category: 'Termoizolații' },
+                  { name: t.catRoof, icon: '🏠', category: 'Termoizolații' },
+                  { name: t.catElectric, icon: '⚡', category: 'Scule & Echipamente' },
+                  { name: t.catPlumbing, icon: '🚰', category: 'Scule & Echipamente' },
+                  { name: t.catTools, icon: '🔨', category: 'Scule & Echipamente' },
+                  { name: t.catGarden, icon: '🪴', category: 'Scule & Echipamente' },
+                  { name: t.catPPE, icon: '🥾', category: 'Scule & Echipamente' },
+                ].map((cat, i) => (
+                  <button
+                    key={i}
+                    onClick={() => {
+                      setSelectedCategory(cat.category);
+                      setActiveTab('catalog');
+                      document.getElementById('products-catalog-section')?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className="bg-white hover:bg-[#EFFAF6] border border-[#D9E2E1] hover:border-[#00A878] p-3.5 rounded-2xl text-left transition-all hover:-translate-y-0.5 shadow-2xs group flex flex-col justify-between h-28 cursor-pointer"
+                  >
+                    <span className="text-2xl group-hover:scale-110 transition-transform">{cat.icon}</span>
+                    <span className="font-extrabold text-xs text-[#0D1B2A] leading-snug line-clamp-2">{cat.name}</span>
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -535,10 +611,10 @@ export default function App() {
                   <ArrowRight className="w-4 h-4 text-[#5C6670] group-hover:text-[#087F5B] group-hover:translate-x-1 transition-all" />
                 </div>
                 <div>
-                  <h4 className="font-extrabold text-sm text-[#0D1B2A]">Calculează materialele</h4>
-                  <p className="text-[11px] text-[#5C6670] mt-0.5 leading-tight font-medium">Află cantitatea necesară și rezerva recomandată.</p>
+                  <h4 className="font-extrabold text-sm text-[#0D1B2A]">{t.shortcutCalcTitle}</h4>
+                  <p className="text-[11px] text-[#5C6670] mt-0.5 leading-tight font-medium">{t.shortcutCalcSub}</p>
                   <span className="inline-flex items-center gap-1 text-[11px] font-extrabold text-[#087F5B] mt-1.5">
-                    Deschide calculatorul
+                    {t.shortcutCalcBtn}
                   </span>
                 </div>
               </button>
@@ -555,10 +631,10 @@ export default function App() {
                   <ArrowRight className="w-4 h-4 text-[#5C6670] group-hover:text-[#087F5B] group-hover:translate-x-1 transition-all" />
                 </div>
                 <div>
-                  <h4 className="font-extrabold text-sm text-[#0D1B2A]">Găsește un meșter</h4>
-                  <p className="text-[11px] text-[#5C6670] mt-0.5 leading-tight font-medium">Alege profesioniști verificați din regiunea ta.</p>
+                  <h4 className="font-extrabold text-sm text-[#0D1B2A]">{t.shortcutCraftsmanTitle}</h4>
+                  <p className="text-[11px] text-[#5C6670] mt-0.5 leading-tight font-medium">{t.shortcutCraftsmanSub}</p>
                   <span className="inline-flex items-center gap-1 text-[11px] font-extrabold text-[#087F5B] mt-1.5">
-                    Vezi meșterii
+                    {t.shortcutCraftsmanBtn}
                   </span>
                 </div>
               </button>
@@ -575,10 +651,10 @@ export default function App() {
                   <ArrowRight className="w-4 h-4 text-[#5C6670] group-hover:text-[#087F5B] group-hover:translate-x-1 transition-all" />
                 </div>
                 <div>
-                  <h4 className="font-extrabold text-sm text-[#0D1B2A]">Soluții complete</h4>
-                  <p className="text-[11px] text-[#5C6670] mt-0.5 leading-tight font-medium">Pachete pentru baie, zugrăvire, gresie și termoizolație.</p>
+                  <h4 className="font-extrabold text-sm text-[#0D1B2A]">{t.shortcutSolutionsTitle}</h4>
+                  <p className="text-[11px] text-[#5C6670] mt-0.5 leading-tight font-medium">{t.shortcutSolutionsSub}</p>
                   <span className="inline-flex items-center gap-1 text-[11px] font-extrabold text-[#087F5B] mt-1.5">
-                    Alege lucrarea
+                    {t.shortcutSolutionsBtn}
                   </span>
                 </div>
               </button>
@@ -595,10 +671,10 @@ export default function App() {
                   <ArrowRight className="w-4 h-4 text-[#5C6670] group-hover:text-[#087F5B] group-hover:translate-x-1 transition-all" />
                 </div>
                 <div>
-                  <h4 className="font-extrabold text-sm text-[#0D1B2A]">Pentru profesioniști</h4>
-                  <p className="text-[11px] text-[#5C6670] mt-0.5 leading-tight font-medium">Prețuri speciale, comenzi pe șantier și avantaje Meister Club.</p>
+                  <h4 className="font-extrabold text-sm text-[#0D1B2A]">{t.shortcutProTitle}</h4>
+                  <p className="text-[11px] text-[#5C6670] mt-0.5 leading-tight font-medium">{t.shortcutProSub}</p>
                   <span className="inline-flex items-center gap-1 text-[11px] font-extrabold text-[#087F5B] mt-1.5">
-                    Descoperă avantajele
+                    {t.shortcutProBtn}
                   </span>
                 </div>
               </button>
@@ -630,8 +706,8 @@ export default function App() {
               {/* Responsive Header: Stacked on Mobile, Inline on Desktop */}
               <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-[#D9E2E1] pb-3">
                 <div className="space-y-0.5">
-                  <h2 className="text-xl sm:text-2xl font-black text-[#0D1B2A] tracking-tight">Catalog produse CodeBau</h2>
-                  <p className="text-xs text-[#5C6670] font-medium">Descoperă materiale și echipamente disponibile în {selectedStore}.</p>
+                  <h2 className="text-xl sm:text-2xl font-black text-[#0D1B2A] tracking-tight">{t.catalogTitle}</h2>
+                  <p className="text-xs text-[#5C6670] font-medium">{t.catalogSubtitle} {selectedStore}.</p>
                 </div>
                 <button 
                   onClick={() => { 
@@ -641,7 +717,7 @@ export default function App() {
                   }} 
                   className="text-xs font-bold text-[#087F5B] hover:text-[#066B4D] flex items-center gap-1 transition-colors self-start sm:self-auto pt-1 sm:pt-0 cursor-pointer"
                 >
-                  <span>Resetează filtrele</span>
+                  <span>{t.resetFilters}</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -656,7 +732,7 @@ export default function App() {
                       : 'bg-[#F8FAF9] text-[#5C6670] hover:text-[#0D1B2A]'
                   }`}
                 >
-                  Toate Produsele ({MOCK_PRODUCTS.length})
+                  {t.allProducts} ({MOCK_PRODUCTS.length})
                 </button>
 
                 <button
@@ -668,7 +744,7 @@ export default function App() {
                   }`}
                 >
                   <Sparkles className="w-3.5 h-3.5 stroke-[2.5]" />
-                  <span>Noutăți</span>
+                  <span>{t.newProducts}</span>
                 </button>
 
                 <button
@@ -680,7 +756,7 @@ export default function App() {
                   }`}
                 >
                   <Tag className="w-3.5 h-3.5 fill-current" />
-                  <span>Promoții & Reduceri</span>
+                  <span>{t.promotionsDiscount}</span>
                 </button>
 
                 <button
@@ -691,7 +767,7 @@ export default function App() {
                       : 'bg-[#F8FAF9] text-[#5C6670] hover:text-[#0D1B2A]'
                   }`}
                 >
-                  Recomandate (Top Calitate)
+                  {t.recommendedTop}
                 </button>
               </div>
 
@@ -699,17 +775,17 @@ export default function App() {
               <div className="relative pt-1">
                 <div className="flex items-center gap-2 overflow-x-auto pb-2 text-xs font-bold scrollbar-none flex-nowrap pr-8">
                   {[
-                    { id: 'all', name: 'Toate Categoriile' },
-                    { id: 'Adezivi & Grunduri', name: 'Adezivi & Grunduri' },
-                    { id: 'Plăci Ceramice & Parchet', name: 'Gresie & Faianță' },
-                    { id: 'Vopsele & Tencuieli', name: 'Vopsele & Lavabile' },
-                    { id: 'Termoizolații', name: 'Polistiren & Izolații' },
-                    { id: 'Scule & Echipamente', name: 'Scule & Unelte Pro' }
+                    { id: 'all', name: t.allCategoriesTab },
+                    { id: 'Adezivi & Grunduri', name: t.catMasonry },
+                    { id: 'Plăci Ceramice & Parchet', name: t.catTiles },
+                    { id: 'Vopsele & Tencuieli', name: t.catPaints },
+                    { id: 'Termoizolații', name: t.catInsulation },
+                    { id: 'Scule & Echipamente', name: t.catTools }
                   ].map(cat => (
                     <button
                       key={cat.id}
                       onClick={() => setSelectedCategory(cat.id)}
-                      aria-label={`Filtrează categoria ${cat.name}`}
+                      aria-label={`Filter ${cat.name}`}
                       className={`px-4 py-2 rounded-xl border transition-all whitespace-nowrap shrink-0 cursor-pointer ${
                         selectedCategory === cat.id
                           ? 'bg-[#087F5B] text-white border-[#087F5B] font-extrabold shadow-sm'
@@ -738,6 +814,72 @@ export default function App() {
                   onToggleFavorite={handleToggleFavorite}
                 />
               ))}
+            </div>
+
+            {/* SECȚIUNEA 8 — DOVEZI DE ÎNCREDERE & REȚEAUA DE MAGAZINE SUDUL MOLDOVEI */}
+            <div className="bg-[#0D1B2A] text-white rounded-3xl p-6 sm:p-8 lg:p-10 border border-[#1A3448] shadow-xl space-y-6">
+              <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#1A3448] pb-6">
+                <div>
+                  <div className="inline-flex items-center gap-1.5 bg-[#00A878]/10 border border-[#00A878]/30 text-[#00A878] text-xs font-bold px-3 py-1 rounded-full mb-2">
+                    <MapPin className="w-3.5 h-3.5" />
+                    <span>{t.southMoldovaBadge}</span>
+                  </div>
+                  <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">{t.storesNetworkTitle}</h3>
+                  <p className="text-xs sm:text-sm text-slate-300 max-w-2xl mt-1">
+                    {t.storesNetworkSubtitle}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setActiveTab('stores')}
+                  className="bg-[#087F5B] hover:bg-[#066B4D] text-white font-extrabold text-xs px-5 py-3 rounded-xl transition-all shadow-md shrink-0 cursor-pointer flex items-center gap-2"
+                >
+                  <span>{t.viewLocationsSchedule}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[
+                  { name: 'CodeBau Cahul', address: 'str. Ștefan cel Mare 102', phone: '+373 299 12 345', badge: t.badgeLogisticCenter },
+                  { name: 'CodeBau Cantemir', address: 'str. Trandafirilor 14', phone: '+373 298 76 543', badge: t.badgeStoreShowroom },
+                  { name: 'CodeBau Vulcănești', address: 'str. Gagarin 45', phone: '+373 293 88 112', badge: t.badgeMaterialsDepot },
+                  { name: 'CodeBau Taraclia', address: 'str. Lenin 89', phone: '+373 294 55 900', badge: t.badgeLockerStore }
+                ].map((st, i) => (
+                  <div key={i} className="bg-[#13283A] border border-[#1A3448] p-4 rounded-2xl space-y-2 hover:border-[#00A878] transition-colors">
+                    <div className="flex items-center justify-between">
+                      <span className="font-extrabold text-sm text-white">{st.name}</span>
+                      <span className="text-[10px] font-bold text-[#00A878] bg-[#00A878]/10 px-2 py-0.5 rounded-full border border-[#00A878]/30">
+                        {st.badge}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-300 font-medium">{st.address}</p>
+                    <p className="text-[11px] text-[#00A878] font-bold flex items-center gap-1">
+                      <Phone className="w-3 h-3" />
+                      <span>{st.phone}</span>
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Guarantees row */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-[#1A3448] text-xs font-bold text-slate-300">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-5 h-5 text-[#00A878] shrink-0" />
+                  <span>Declarații de Performanță (DoP) garantate</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Truck className="w-5 h-5 text-[#00A878] shrink-0" />
+                  <span>Livrare cu macara pe șantier</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-[#00A878] shrink-0" />
+                  <span>Lockere de ridicare 24/7</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-[#00A878] shrink-0" />
+                  <span>Retur garantat 30 zile</span>
+                </div>
+              </div>
             </div>
 
           </div>

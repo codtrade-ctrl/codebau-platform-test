@@ -325,7 +325,12 @@ export const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                 {relatedProducts.map((p) => {
-                  const effective = getEffectivePrice(p, currentRole, selectedStore);
+                  const effective = PromotionService.calculateEffectivePrice({
+                    product: p,
+                    basePrice: p.priceRetail,
+                    userRole: currentRole,
+                    selectedStore
+                  });
 
                   return (
                     <div key={p.id} className="bg-white p-4 rounded-2xl border border-[#D9E2E1] shadow-2xs flex flex-col justify-between space-y-3">

@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { CodeBauLogo } from './CodeBauLogo';
 import { ChevronDown, Mail, Phone, MapPin, Lock } from 'lucide-react';
+import { useLanguage } from '../utils/i18n';
 
 interface FooterProps {
   onTabChange: (tab: string) => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({ onTabChange }) => {
+  const { t } = useLanguage();
   const [openSection, setOpenSection] = useState<string | null>(null);
 
   const toggleSection = (section: string) => {
@@ -29,13 +31,13 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange }) => {
               </div>
             </div>
             <p className="text-slate-300 text-xs leading-relaxed">
-              Soluția completă pentru construcții, renovări și materiale de calitate în sudul Republicii Moldova.
+              {t.footerTagline}
             </p>
           </div>
 
           <div className="text-xs text-slate-300 font-medium bg-[#13283A] px-3.5 py-2 rounded-xl border border-[#1A3448]">
-            <p className="font-bold text-white">Magazine fizice & Lockere 24/7:</p>
-            <p className="text-[#00A878] font-semibold mt-0.5">Cahul, Cantemir, Vulcănești și Taraclia</p>
+            <p className="font-bold text-white">{t.footerPhysicalStores}</p>
+            <p className="text-[#00A878] font-semibold mt-0.5">Cahul, Cantemir, Vulcănești, Taraclia</p>
           </div>
         </div>
 
@@ -44,31 +46,31 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange }) => {
           
           {/* Column 1: Magazin și servicii */}
           <div className="space-y-3">
-            <h5 className="font-extrabold text-white text-xs uppercase tracking-wider">Magazin și servicii</h5>
+            <h5 className="font-extrabold text-white text-xs uppercase tracking-wider">{t.footerStoreAndServices}</h5>
             <ul className="space-y-2 text-slate-300">
               <li>
                 <button onClick={() => onTabChange('catalog')} className="hover:text-[#00A878] transition-colors cursor-pointer">
-                  Catalog Materiale
+                  {t.footerMaterialsCatalog}
                 </button>
               </li>
               <li>
                 <button onClick={() => onTabChange('calculator')} className="hover:text-[#00A878] transition-colors cursor-pointer">
-                  Calculator Necesare
+                  {t.calculateMaterials}
                 </button>
               </li>
               <li>
                 <button onClick={() => onTabChange('solutions')} className="hover:text-[#00A878] transition-colors cursor-pointer">
-                  Pachete Renovare
+                  {t.footerRenovationPackages}
                 </button>
               </li>
               <li>
                 <button onClick={() => onTabChange('guides')} className="hover:text-[#00A878] transition-colors cursor-pointer font-bold text-[#00A878]">
-                  Centrul CodeBau (Ghiduri)
+                  {t.footerGuidesCenter}
                 </button>
               </li>
               <li>
                 <button onClick={() => onTabChange('stores')} className="hover:text-[#00A878] transition-colors cursor-pointer">
-                  Magazine & Stocuri Local
+                  {t.footerLocalStores}
                 </button>
               </li>
             </ul>
@@ -76,7 +78,7 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange }) => {
 
           {/* Column 2: Profesioniști */}
           <div className="space-y-3">
-            <h5 className="font-extrabold text-white text-xs uppercase tracking-wider">Profesioniști</h5>
+            <h5 className="font-extrabold text-white text-xs uppercase tracking-wider">{t.navProfessionals}</h5>
             <ul className="space-y-2 text-slate-300">
               <li>
                 <button onClick={() => onTabChange('meister')} className="hover:text-[#F4B400] transition-colors cursor-pointer">
@@ -85,12 +87,12 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange }) => {
               </li>
               <li>
                 <button onClick={() => onTabChange('craftsmen')} className="hover:text-[#00A878] transition-colors cursor-pointer">
-                  Rețeaua de Meșteri
+                  {t.footerCraftsmenNetwork}
                 </button>
               </li>
               <li>
                 <button onClick={() => onTabChange('b2b')} className="hover:text-blue-400 transition-colors cursor-pointer">
-                  Cont Corporativ B2B
+                  {t.business360}
                 </button>
               </li>
             </ul>
@@ -98,7 +100,7 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange }) => {
 
           {/* Column 3: Suport și contact */}
           <div className="space-y-3">
-            <h5 className="font-extrabold text-white text-xs uppercase tracking-wider">Suport și contact</h5>
+            <h5 className="font-extrabold text-white text-xs uppercase tracking-wider">{t.footerSupportAndContact}</h5>
             <ul className="space-y-2 text-slate-300">
               <li className="flex items-center gap-2">
                 <Mail className="w-3.5 h-3.5 text-[#00A878]" />
@@ -106,15 +108,15 @@ export const Footer: React.FC<FooterProps> = ({ onTabChange }) => {
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="w-3.5 h-3.5 text-[#00A878]" />
-                <span>Telefon: +373 XX XXX XXX</span>
+                <span>Telefon: +373 299 12 345</span>
               </li>
               <li className="flex items-center gap-2">
                 <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                <span>Regiune deservită: Sudul Republicii Moldova</span>
+                <span>{t.footerRegionServed}</span>
               </li>
               <li className="flex items-center gap-2 text-[#00A878] font-bold pt-1">
                 <Lock className="w-3.5 h-3.5 text-[#00A878]" />
-                <span>Ridicare și lockere 24/7 în magazinele selectate</span>
+                <span>{t.footerLockers247}</span>
               </li>
             </ul>
           </div>

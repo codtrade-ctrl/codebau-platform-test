@@ -3,6 +3,7 @@ import { Product, UserRole } from '../types';
 import { ShoppingCart, Star, Shield, Eye, Heart, Check, Sparkles, Tag } from 'lucide-react';
 import { ProductImage } from './ProductImage';
 import { PromotionService } from '../services/PromotionService';
+import { useLanguage } from '../utils/i18n';
 
 interface ProductCardProps {
   product: Product;
@@ -27,6 +28,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   isFavorite = false,
   onToggleFavorite
 }) => {
+  const { t } = useLanguage();
   const role = currentRole || userRole || 'client';
   const handleOpen = onOpenDetail || onSelectProduct || (() => {});
   const handleFav = onToggleFavorite || (() => {});
@@ -97,7 +99,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             {effectivePrice.isPromoActive && (
               <span className="bg-[#F4B400] text-[#0D1B2A] text-[10px] font-black uppercase px-2 py-0.5 rounded-md border border-amber-600/30 shadow-xs flex items-center gap-1 shrink-0">
                 <Tag className="w-3 h-3 fill-current" />
-                {effectivePrice.badgeText || 'PROMOȚIE'}
+                {effectivePrice.badgeText || t.promoBadge}
               </span>
             )}
 
@@ -105,7 +107,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             {isNew && (
               <span className="bg-[#DDF5EE] text-[#087F5B] text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md border border-[#087F5B]/20 shadow-xs flex items-center gap-1 shrink-0">
                 <Sparkles className="w-3 h-3 stroke-[2.5]" />
-                NOUTATE
+                {t.newBadge}
               </span>
             )}
           </div>
@@ -130,7 +132,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             e.stopPropagation();
             handleFav(product);
           }}
-          aria-label={`Adaugă ${product.name} la favorite`}
+          aria-label={`${t.favorites}: ${product.name}`}
           className={`absolute top-2 right-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full backdrop-blur-md transition-colors z-10 ${
             isFavorite ? 'bg-rose-500 text-white' : 'bg-white/80 text-[#5C6670] hover:text-[#0D1B2A] hover:bg-white shadow-xs'
           }`}
@@ -142,7 +144,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <div className="absolute inset-0 bg-[#0D1B2A]/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
           <span className="bg-white/95 text-[#0D1B2A] text-xs font-extrabold px-3 py-1.5 rounded-xl border border-[#D9E2E1] flex items-center gap-1.5 shadow-md">
             <Eye className="w-4 h-4 text-[#087F5B]" />
-            Vezi detalii
+            {t.viewDetails}
           </span>
         </div>
       </div>
@@ -152,7 +154,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         
         {/* Title & SKU & Rating */}
         <div className="space-y-1.5">
-          <p className="text-[11px] text-[#5C6670] font-mono tracking-wide font-medium">SKU: {product.sku}</p>
+          <p className="text-[11px] text-[#5C6670] font-mono tracking-wide font-medium">{t.sku}: {product.sku}</p>
           <h4 
             onClick={() => handleOpen(product)}
             className="text-sm font-extrabold text-[#0D1B2A] line-clamp-2 min-h-[2.5rem] hover:text-[#087F5B] cursor-pointer transition-colors leading-snug"
@@ -169,7 +171,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             </div>
             <div className="flex items-center text-[#5C6670] text-[11px] font-medium">
               <Shield className="w-3 h-3 text-[#00A878] mr-1 shrink-0" />
-              <span>{product.warrantyYears && product.warrantyYears > 0 ? `Garanție ${product.warrantyYears} Ani` : 'Documentație tehnică'}</span>
+              <span>{product.warrantyYears && product.warrantyYears > 0 ? `${t.warrantyYears} ${product.warrantyYears} ${t.language === 'ru' ? 'Лет' : 'Ani'}` : t.techDocs}</span>
             </div>
           </div>
         </div>
@@ -181,21 +183,21 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               <div className="flex items-center justify-between font-extrabold">
                 <span className="flex items-center gap-1.5 text-[#0D1B2A]">
                   <span className="w-2 h-2 rounded-full bg-[#00A878] animate-pulse"></span>
-                  În stoc la {storeDisplayName}
+                  {t.inStockAt} {storeDisplayName}
                 </span>
                 <span className="text-[#087F5B] font-black">{stock} {product.unit}</span>
               </div>
-              <p className="text-[10px] text-[#5C6670] font-medium pl-3.5">Ridicare disponibilă astăzi</p>
+              <p className="text-[10px] text-[#5C6670] font-medium pl-3.5">{t.availablePickupToday}</p>
             </div>
           ) : (
             <div className="space-y-0.5">
               <div className="flex items-center justify-between font-extrabold">
                 <span className="flex items-center gap-1.5 text-amber-600">
                   <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-                  La comandă din {storeDisplayName}
+                  {t.onOrderFrom} {storeDisplayName}
                 </span>
               </div>
-              <p className="text-[10px] text-[#5C6670] font-medium pl-3.5">Livrare în 1–2 zile</p>
+              <p className="text-[10px] text-[#5C6670] font-medium pl-3.5">{t.deliveryDays}</p>
             </div>
           )}
         </div>
@@ -220,12 +222,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                   <span className="text-xs text-[#5C6670] font-medium">/ {product.unit}</span>
                 </div>
                 <p className="text-[10px] text-[#087F5B] font-extrabold">
-                  Economisești {formatPrice(effectivePrice.discountAmount)} MDL
+                  {t.savingAmount} {formatPrice(effectivePrice.discountAmount)} MDL
                 </p>
               </div>
             ) : showProPrice ? (
               <div>
-                <p className="text-[10px] text-[#087F5B] font-extrabold uppercase tracking-wider">Preț Meister / B2B</p>
+                <p className="text-[10px] text-[#087F5B] font-extrabold uppercase tracking-wider">{t.proPriceLabel}</p>
                 <div className="flex items-baseline gap-1 flex-wrap">
                   <span className="text-lg font-black text-[#087F5B] whitespace-nowrap">{formatPrice(product.pricePro)} MDL</span>
                   <span className="text-xs text-[#5C6670] font-medium">/ {product.unit}</span>
@@ -234,14 +236,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               </div>
             ) : (
               <div>
-                <p className="text-[10px] text-[#5C6670] uppercase tracking-wider font-extrabold">Preț Persoană Fizică</p>
+                <p className="text-[10px] text-[#5C6670] uppercase tracking-wider font-extrabold">{t.retailPriceLabel}</p>
                 <div className="flex items-baseline gap-1 flex-wrap">
                   <span className="text-xl font-black text-[#0D1B2A] whitespace-nowrap">{formatPrice(product.priceRetail)} MDL</span>
                   <span className="text-xs text-[#5C6670] font-medium">/ {product.unit}</span>
                 </div>
                 {otherRolePromo && (
                   <p className="text-[9px] text-amber-700 font-extrabold mt-0.5">
-                    Autentifică-te pentru oferta meșteri / B2B
+                    {t.loginForProOffer}
                   </p>
                 )}
               </div>
@@ -250,25 +252,25 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
           <button
             onClick={handleAddToCartClick}
-            aria-label={`Adaugă ${product.name} în coș`}
+            aria-label={`${t.addToCart} ${product.name}`}
             className={`min-h-[44px] px-3.5 rounded-xl font-extrabold text-xs transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer shrink-0 ${
               justAdded 
                 ? 'bg-[#00A878] text-white scale-105' 
                 : 'bg-[#087F5B] hover:bg-[#066B4D] active:scale-95 text-white'
             }`}
-            title="Adaugă în coș"
+            title={t.addToCart}
           >
             {justAdded ? (
               <>
                 <Check className="w-4 h-4 stroke-[3]" />
-                <span className="hidden sm:inline">Adăugat!</span>
-                <span className="sm:hidden">Adăugat</span>
+                <span className="hidden sm:inline">{t.added}</span>
+                <span className="sm:hidden">{t.added}</span>
               </>
             ) : (
               <>
                 <ShoppingCart className="w-4 h-4 text-white" />
-                <span className="hidden sm:inline">Adaugă</span>
-                <span className="sm:hidden">Adaugă în coș</span>
+                <span className="hidden sm:inline">{t.add}</span>
+                <span className="sm:hidden">{t.addToCart}</span>
               </>
             )}
           </button>

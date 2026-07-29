@@ -643,6 +643,8 @@ export const MOCK_PROJECT_SOLUTIONS: ProjectSolution[] = [
   }
 ];
 
+export const MOCK_SOLUTIONS = MOCK_PROJECT_SOLUTIONS;
+
 export const MOCK_CRAFTSMEN: Craftsman[] = [
   {
     id: 'craft-1',
@@ -878,26 +880,3 @@ export const MOCK_B2B_PROFILE: B2BCompanyProfile = {
   assignedAccountManager: 'George Ionescu (Senior B2B Manager Sud - contact@codebau.com)',
   costCenters: ['Șantier Centru Cahul', 'Proiect Spital Cantemir', 'Șantier Vinărie Vulcănești']
 };
-export const MOCK_SOLUTIONS = [
-  {
-    id: 'sol-montare-gresie',
-    slug: 'montare-gresie-si-faianta',
-    title: 'Montare gresie și faianță',
-    description:
-      'Soluție completă pentru pregătirea suportului, hidroizolație, adeziv, nivelare și chituire.'
-  },
-  {
-    id: 'sol-renovare-baie',
-    slug: 'renovare-baie',
-    title: 'Renovare completă baie',
-    description:
-      'Pachet complet pentru pregătirea suprafețelor, hidroizolație, placare ceramică și finisare.'
-  },
-  {
-    id: 'sol-termoizolatie',
-    slug: 'termoizolatie-fatada',
-    title: 'Termoizolație fațadă',
-    description:
-      'Sistem complet pentru izolarea fațadei, inclusiv adeziv, termoizolație, plasă, dibluri și finisaj.'
-  }
-];

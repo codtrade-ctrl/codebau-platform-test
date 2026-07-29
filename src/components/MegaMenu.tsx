@@ -1,7 +1,8 @@
 import React from 'react';
 import { 
-  Building2, Paintbrush, Zap, Wrench, Trees, ArrowRight, Sparkles, Tag, Package
+  Building2, Paintbrush, Zap, Wrench, Trees, ArrowRight, Tag, Package
 } from 'lucide-react';
+import { useLanguage } from '../utils/i18n';
 
 interface MegaMenuProps {
   isOpen: boolean;
@@ -16,13 +17,23 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({
   onSelectCategory,
   onViewAllProducts
 }) => {
+  const { language, t } = useLanguage();
   if (!isOpen) return null;
+
+  const isRu = language === 'ru';
 
   const categories = [
     {
-      title: 'Materiale de construcții',
+      title: isRu ? 'Строительные материалы' : 'Materiale de construcții',
       icon: Building2,
-      items: [
+      items: isRu ? [
+        'Цемент и растворы',
+        'Клеи и грунтовки',
+        'Гипсокартон',
+        'Кладочные материалы',
+        'Гидроизоляция',
+        'Теплоизоляция'
+      ] : [
         'Ciment și mortare',
         'Adezivi și grunduri',
         'Gips-carton',
@@ -32,9 +43,15 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({
       ]
     },
     {
-      title: 'Finisaje',
+      title: isRu ? 'Отделка' : 'Finisaje',
       icon: Paintbrush,
-      items: [
+      items: isRu ? [
+        'Плитка и фаянс',
+        'Напольные покрытия',
+        'Краски',
+        'Обои',
+        'Профили и аксессуары'
+      ] : [
         'Gresie și faianță',
         'Pardoseli',
         'Vopsele',
@@ -43,9 +60,14 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({
       ]
     },
     {
-      title: 'Instalații',
+      title: isRu ? 'Инженерные системы' : 'Instalații',
       icon: Zap,
-      items: [
+      items: isRu ? [
+        'Электрика',
+        'Сантехника',
+        'Отопление',
+        'Вентиляция'
+      ] : [
         'Electricitate',
         'Sanitare',
         'Încălzire',
@@ -53,9 +75,14 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({
       ]
     },
     {
-      title: 'Scule și echipamente',
+      title: isRu ? 'Инструменты и оборудование' : 'Scule și echipamente',
       icon: Wrench,
-      items: [
+      items: isRu ? [
+        'Электроинструмент',
+        'Ручной инструмент',
+        'Проф. оборудование',
+        'Охрана труда'
+      ] : [
         'Scule electrice',
         'Scule de mână',
         'Echipamente profesionale',
@@ -63,9 +90,15 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({
       ]
     },
     {
-      title: 'Exterior',
+      title: isRu ? 'Благоустройство и кровля' : 'Exterior',
       icon: Trees,
-      items: [
+      items: isRu ? [
+        'Кровля',
+        'Фасады',
+        'Сад',
+        'Тротуарная плитка',
+        'Заборы'
+      ] : [
         'Acoperiș',
         'Fațade',
         'Grădină',
@@ -119,14 +152,14 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({
             <div className="space-y-3">
               <div className="inline-flex items-center gap-1.5 bg-[#FEF3C7] text-[#B45309] text-[10px] font-extrabold px-2.5 py-1 rounded-full border border-[#F59E0B]/30">
                 <Tag className="w-3 h-3 text-[#D97706]" />
-                <span>Promoția Săptămânii</span>
+                <span>{isRu ? 'Акция недели' : 'Promoția Săptămânii'}</span>
               </div>
               
               <h4 className="font-black text-xs text-[#0D1B2A] leading-snug">
-                Pachet Adeziv Ceresit CM17 + Chit Rosturi (-15%)
+                {isRu ? 'Комплект Клей Ceresit CM17 + Затирка (-15%)' : 'Pachet Adeziv Ceresit CM17 + Chit Rosturi (-15%)'}
               </h4>
               <p className="text-[11px] text-[#5C6670] leading-relaxed">
-                Valabil pentru comenzile livrate în Cahul și tot sudul Moldovei.
+                {isRu ? 'Действительно для заказов с доставкой в Кагул и по всему югу Молдовы.' : 'Valabil pentru comenzile livrate în Cahul și tot sudul Moldovei.'}
               </p>
             </div>
 
@@ -139,7 +172,7 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({
                 className="w-full bg-[#087F5B] hover:bg-[#066B4D] text-white font-extrabold py-2.5 px-3 rounded-xl text-xs shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <Package className="w-4 h-4 text-white" />
-                <span>Vezi Toate Produsele</span>
+                <span>{t.viewProducts}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
