@@ -22,6 +22,7 @@ import { Footer } from './components/Footer';
 import { CodeBauLogo } from './components/CodeBauLogo';
 import { ProductDetailPage } from './components/ProductDetailPage';
 import { PromotionService } from './services/PromotionService';
+import { PriceEngine } from './services/PriceEngine';
 import { NewsSection } from './components/NewsSection';
 import { PromotionsSection } from './components/PromotionsSection';
 import { NewsPage } from './components/NewsPage';
@@ -32,6 +33,7 @@ import { AdminArticlesView } from './components/AdminArticlesView';
 import { getProductBySlug, getProductSlug } from './utils/formatters';
 import { defaultCartRepository, getCartSessionId, logTestEvent } from './services/cartRepository';
 import { useLanguage } from './utils/i18n';
+import { scrollToPageTop, scrollToHashElement, unlockBodyScroll } from './utils/scrollManager';
 import { Search, Sparkles, Filter, Calculator, Wrench, Building2, Layers, ShoppingCart, Check, ShieldCheck, ArrowRight, Store, Clock, Phone, MapPin, BookOpen, CheckCircle2, Truck, UserCheck, Tag } from 'lucide-react';
 
 export default function App() {
@@ -44,9 +46,26 @@ export default function App() {
   const [editorialArticleSlug, setEditorialArticleSlug] = useState<string | null>(null);
   const [confirmedOrderNumber, setConfirmedOrderNumber] = useState<string>('');
 
+  // Global Scroll & View Change Handler
+  useEffect(() => {
+    // Ensure body overflow lock is removed on view changes
+    unlockBodyScroll();
+
+    if (window.location.hash) {
+      requestAnimationFrame(() => {
+        scrollToHashElement(window.location.hash);
+      });
+    } else {
+      requestAnimationFrame(() => {
+        scrollToPageTop({ top: 0, behavior: 'auto' });
+      });
+    }
+  }, [activeTab, activeProductSlug, editorialArticleSlug]);
+
   // Sync routing with URL path /produs/:slug, /ghiduri, /ghiduri/:slug, /admin/articole, /cos, /finalizare-comanda
   useEffect(() => {
     const handleRouteSync = () => {
+      unlockBodyScroll();
       const path = window.location.pathname;
       if (path.startsWith('/produs/')) {
         const slug = path.replace(/^\/produs\//, '').trim();
@@ -84,9 +103,14 @@ export default function App() {
         setActiveTab('confirmation');
       } else if (path === '/' || path === '') {
         setActiveProductSlug(null);
-        if (['product_detail', 'cart', 'checkout', 'confirmation', 'article_detail'].includes(activeTab)) {
-          setActiveTab('catalog');
-        }
+        setEditorialArticleSlug(null);
+        setActiveTab('catalog');
+      }
+
+      if (window.location.hash) {
+        requestAnimationFrame(() => scrollToHashElement(window.location.hash));
+      } else {
+        requestAnimationFrame(() => scrollToPageTop({ top: 0, behavior: 'auto' }));
       }
     };
 
@@ -95,83 +119,130 @@ export default function App() {
     return () => window.removeEventListener('popstate', handleRouteSync);
   }, []);
 
+  const closeAllOverlays = () => {
+    setIsCartOpen(false);
+    setIsAiModalOpen(false);
+    setIsQAModalOpen(false);
+    setSelectedProduct(null);
+    unlockBodyScroll();
+  };
+
   const navigateToEditorialCenter = () => {
+    closeAllOverlays();
     setEditorialArticleSlug(null);
     setActiveTab('guides');
     window.history.pushState({}, '', '/ghiduri');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    scrollToPageTop({ top: 0, behavior: 'auto' });
   };
 
   const navigateToArticle = (slug: string) => {
+    closeAllOverlays();
     setEditorialArticleSlug(slug);
     setActiveTab('article_detail');
     window.history.pushState({ slug }, '', `/ghiduri/${slug}`);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    scrollToPageTop({ top: 0, behavior: 'auto' });
   };
 
   const navigateToNews = () => {
+    closeAllOverlays();
     setActiveProductSlug(null);
     setActiveTab('noutati');
     window.history.pushState({}, '', '/noutati');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    scrollToPageTop({ top: 0, behavior: 'auto' });
   };
 
   const navigateToPromotions = () => {
+    closeAllOverlays();
     setActiveProductSlug(null);
     setActiveTab('promotii');
     window.history.pushState({}, '', '/promotii');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    scrollToPageTop({ top: 0, behavior: 'auto' });
   };
 
   const navigateToProduct = (slug: string) => {
+    closeAllOverlays();
     setActiveProductSlug(slug);
     setActiveTab('product_detail');
     window.history.pushState({ slug }, '', `/produs/${slug}`);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    scrollToPageTop({ top: 0, behavior: 'auto' });
   };
 
   const navigateToCart = () => {
+    closeAllOverlays();
     setActiveProductSlug(null);
     setActiveTab('cart');
     window.history.pushState({}, '', '/cos');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    scrollToPageTop({ top: 0, behavior: 'auto' });
   };
 
   const navigateToCheckout = () => {
+    closeAllOverlays();
     setActiveProductSlug(null);
     setActiveTab('checkout');
     window.history.pushState({}, '', '/finalizare-comanda');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    scrollToPageTop({ top: 0, behavior: 'auto' });
   };
 
   const navigateToConfirmation = (orderNumber: string) => {
+    closeAllOverlays();
     setConfirmedOrderNumber(orderNumber);
     setActiveProductSlug(null);
     setActiveTab('confirmation');
     window.history.pushState({}, '', `/comanda-confirmata/${orderNumber}`);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    scrollToPageTop({ top: 0, behavior: 'auto' });
   };
 
   const navigateBackToCatalog = () => {
+    closeAllOverlays();
     setActiveProductSlug(null);
+    setEditorialArticleSlug(null);
     setActiveTab('catalog');
-    if (window.location.pathname.startsWith('/produs/') || window.location.pathname === '/cos') {
+    if (window.location.pathname !== '/') {
       window.history.pushState({}, '', '/');
     }
+    scrollToPageTop({ top: 0, behavior: 'auto' });
   };
 
   const handleTabChange = (tab: string) => {
+    closeAllOverlays();
+
+    // Special handling for 'home' or 'catalog'
+    if (tab === 'home' || tab === 'catalog') {
+      const isAlreadyOnHome = (activeTab === 'catalog' || activeTab === 'home') && !activeProductSlug && !editorialArticleSlug;
+
+      setActiveProductSlug(null);
+      setEditorialArticleSlug(null);
+      setActiveTab('catalog');
+
+      if (window.location.pathname !== '/') {
+        window.history.pushState({}, '', '/');
+      }
+
+      if (isAlreadyOnHome) {
+        // Already on home -> smooth scroll to top
+        scrollToPageTop({ top: 0, behavior: 'smooth' });
+      } else {
+        // Navigating from another view -> immediate scroll to top
+        scrollToPageTop({ top: 0, behavior: 'auto' });
+      }
+      return;
+    }
+
     if (tab === 'cart') {
       navigateToCart();
       return;
     }
-    if (tab !== 'product_detail') {
+
+    if (tab !== 'product_detail' && tab !== 'article_detail') {
       setActiveProductSlug(null);
-      if (window.location.pathname.startsWith('/produs/') || window.location.pathname === '/cos') {
+      setEditorialArticleSlug(null);
+      if (window.location.pathname !== '/') {
         window.history.pushState({}, '', '/');
       }
     }
+
     setActiveTab(tab);
+    scrollToPageTop({ top: 0, behavior: 'auto' });
   };
 
   // Catalog Filters
@@ -229,16 +300,56 @@ export default function App() {
 
   // Cart Handlers
   const handleAddToCart = (product: Product, quantity = 1) => {
-    const appliedPrice = (currentRole === 'meister' || currentRole === 'b2b') ? product.pricePro : product.priceRetail;
+    const priceInfo = PriceEngine.getProductPrice(product, currentRole, selectedStore, quantity);
+    const appliedPrice = priceInfo.unitPrice;
+
     setCartItems(prev => {
       const existing = prev.find(item => item.product.id === product.id);
 
       if (existing) {
         return prev.map(item =>
-          item.product.id === product.id ? { ...item, quantity: item.quantity + quantity, appliedPrice } : item
+          item.product.id === product.id
+            ? {
+                ...item,
+                quantity: item.quantity + quantity,
+                appliedPrice,
+                unitPrice: appliedPrice,
+                regularUnitPrice: priceInfo.regularPrice,
+                promotionalPrice: priceInfo.promotionalPrice,
+                promotionId: priceInfo.promotionId,
+                promotionName: priceInfo.promotionName,
+                discountAmount: priceInfo.savingsPerUnit,
+                vatRate: priceInfo.vatRate,
+                selectedStoreId: selectedStore
+              }
+            : item
         );
       }
-      return [...prev, { product, quantity, appliedPrice }];
+      return [
+        ...prev,
+        {
+          id: `item_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          productId: product.id,
+          sku: product.sku,
+          name: product.name,
+          image: product.image,
+          brand: product.brand,
+          product,
+          quantity,
+          unit: product.unit,
+          appliedPrice,
+          unitPrice: appliedPrice,
+          basePrice: priceInfo.regularPrice,
+          regularUnitPrice: priceInfo.regularPrice,
+          promotionalPrice: priceInfo.promotionalPrice,
+          promotionId: priceInfo.promotionId,
+          promotionName: priceInfo.promotionName,
+          discountAmount: priceInfo.savingsPerUnit,
+          vatRate: priceInfo.vatRate,
+          selectedStoreId: selectedStore,
+          addedAt: new Date().toISOString()
+        }
+      ];
     });
 
     logTestEvent('cart_item_added', { productId: product.id, productName: product.name, quantity, appliedPrice });
@@ -248,11 +359,37 @@ export default function App() {
     setCartItems(prev => {
       let updated = [...prev];
       items.forEach(newItem => {
-        const idx = updated.findIndex(i => i.product.id === newItem.product.id);
+        const prod = newItem.product;
+        const priceInfo = PriceEngine.getProductPrice(prod, currentRole, selectedStore, newItem.quantity);
+        const appliedPrice = newItem.appliedPrice || priceInfo.unitPrice;
+
+        const idx = updated.findIndex(i => i.product.id === prod.id);
         if (idx >= 0) {
-          updated[idx] = { ...updated[idx], quantity: updated[idx].quantity + newItem.quantity };
+          updated[idx] = {
+            ...updated[idx],
+            quantity: updated[idx].quantity + newItem.quantity,
+            appliedPrice,
+            unitPrice: appliedPrice,
+            regularUnitPrice: priceInfo.regularPrice
+          };
         } else {
-          updated.push(newItem);
+          updated.push({
+            ...newItem,
+            id: newItem.id || `item_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+            productId: prod.id,
+            sku: prod.sku,
+            name: prod.name,
+            image: prod.image,
+            brand: prod.brand,
+            appliedPrice,
+            unitPrice: appliedPrice,
+            basePrice: priceInfo.regularPrice,
+            regularUnitPrice: priceInfo.regularPrice,
+            promotionalPrice: priceInfo.promotionalPrice,
+            vatRate: priceInfo.vatRate,
+            selectedStoreId: selectedStore,
+            addedAt: new Date().toISOString()
+          });
         }
       });
       return updated;
@@ -386,17 +523,17 @@ export default function App() {
         currentRole={currentRole}
         onRoleChange={(role) => {
           setCurrentRole(role);
-          if (role === 'meister') setActiveTab('meister');
-          else if (role === 'b2b') setActiveTab('b2b');
-          else if (role === 'admin') setActiveTab('admin');
+          if (role === 'meister') handleTabChange('meister');
+          else if (role === 'b2b') handleTabChange('b2b');
+          else if (role === 'admin') handleTabChange('admin');
         }}
         selectedStore={selectedStore}
         onStoreChange={setSelectedStore}
         activeTab={activeTab}
-        onTabChange={setActiveTab}
+        onTabChange={handleTabChange}
         cartCount={cartTotalItems}
         onOpenCart={() => setIsCartOpen(true)}
-        onOpenAiAssistant={() => setIsAiModalOpen(false)}
+        onOpenAiAssistant={() => setIsAiModalOpen(true)}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         favoritesCount={favoriteIds.length}
@@ -404,7 +541,7 @@ export default function App() {
         onSelectCategory={(cat) => {
           setSelectedCategory('all');
           setSearchQuery(cat);
-          setActiveTab('catalog');
+          handleTabChange('catalog');
         }}
       />
 
@@ -448,14 +585,14 @@ export default function App() {
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                       {[
-                        { label: t.intentBuyProducts, action: () => { setActiveTab('catalog'); document.getElementById('products-catalog-section')?.scrollIntoView({ behavior: 'smooth' }); } },
-                        { label: t.intentBathroom, action: () => setActiveTab('solutions') },
-                        { label: t.intentPainting, action: () => setActiveTab('solutions') },
-                        { label: t.intentTile, action: () => setActiveTab('solutions') },
-                        { label: t.intentFacade, action: () => setActiveTab('solutions') },
-                        { label: t.intentRoof, action: () => setActiveTab('solutions') },
+                        { label: t.intentBuyProducts, action: () => { handleTabChange('catalog'); document.getElementById('products-catalog-section')?.scrollIntoView({ behavior: 'smooth' }); } },
+                        { label: t.intentBathroom, action: () => handleTabChange('solutions') },
+                        { label: t.intentPainting, action: () => handleTabChange('solutions') },
+                        { label: t.intentTile, action: () => handleTabChange('solutions') },
+                        { label: t.intentFacade, action: () => handleTabChange('solutions') },
+                        { label: t.intentRoof, action: () => handleTabChange('solutions') },
                         { label: t.intentMaterialList, action: () => setIsAiModalOpen(true) },
-                        { label: t.intentCompanyQuote, action: () => setActiveTab('b2b') },
+                        { label: t.intentCompanyQuote, action: () => handleTabChange('b2b') },
                       ].map((intent, i) => (
                         <button
                           key={i}
@@ -473,7 +610,7 @@ export default function App() {
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
                       {/* Button 1: Începe un proiect */}
                       <button
-                        onClick={() => setActiveTab('solutions')}
+                        onClick={() => handleTabChange('solutions')}
                         className="w-full sm:w-auto bg-[#087F5B] hover:bg-[#066B4D] text-white font-extrabold px-6 py-3.5 rounded-xl text-xs shadow-md flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer"
                       >
                         <span>{t.startProject}</span>
@@ -483,7 +620,7 @@ export default function App() {
                       {/* Button 2: Vezi produsele */}
                       <button
                         onClick={() => {
-                          setActiveTab('catalog');
+                          handleTabChange('catalog');
                           setTimeout(() => {
                             document.getElementById('products-catalog-section')?.scrollIntoView({ behavior: 'smooth' });
                           }, 50);
@@ -497,7 +634,7 @@ export default function App() {
                     {/* Link: Calculează necesarul */}
                     <div className="pt-1">
                       <button
-                        onClick={() => setActiveTab('calculator')}
+                        onClick={() => handleTabChange('calculator')}
                         className="text-xs text-[#087F5B] hover:text-[#066B4D] font-extrabold underline underline-offset-4 flex items-center gap-1.5 transition-colors cursor-pointer"
                       >
                         <Calculator className="w-3.5 h-3.5 text-[#087F5B]" />
@@ -601,7 +738,7 @@ export default function App() {
               
               {/* Card 1 */}
               <button
-                onClick={() => setActiveTab('calculator')}
+                onClick={() => handleTabChange('calculator')}
                 className="bg-white border border-[#D9E2E1] hover:border-[#00A878] p-4 rounded-2xl text-left transition-all hover:-translate-y-0.5 shadow-sm hover:shadow-md group flex flex-col justify-between space-y-2 min-h-[140px] sm:min-h-[160px] cursor-pointer"
               >
                 <div className="flex items-start justify-between">
@@ -621,7 +758,7 @@ export default function App() {
 
               {/* Card 2 */}
               <button
-                onClick={() => setActiveTab('craftsmen')}
+                onClick={() => handleTabChange('craftsmen')}
                 className="bg-white border border-[#D9E2E1] hover:border-[#00A878] p-4 rounded-2xl text-left transition-all hover:-translate-y-0.5 shadow-sm hover:shadow-md group flex flex-col justify-between space-y-2 min-h-[140px] sm:min-h-[160px] cursor-pointer"
               >
                 <div className="flex items-start justify-between">
@@ -641,7 +778,7 @@ export default function App() {
 
               {/* Card 3 */}
               <button
-                onClick={() => setActiveTab('solutions')}
+                onClick={() => handleTabChange('solutions')}
                 className="bg-white border border-[#D9E2E1] hover:border-[#00A878] p-4 rounded-2xl text-left transition-all hover:-translate-y-0.5 shadow-sm hover:shadow-md group flex flex-col justify-between space-y-2 min-h-[140px] sm:min-h-[160px] cursor-pointer"
               >
                 <div className="flex items-start justify-between">
@@ -661,7 +798,7 @@ export default function App() {
 
               {/* Card 4 */}
               <button
-                onClick={() => setActiveTab('b2b')}
+                onClick={() => handleTabChange('b2b')}
                 className="bg-white border border-[#D9E2E1] hover:border-[#00A878] p-4 rounded-2xl text-left transition-all hover:-translate-y-0.5 shadow-sm hover:shadow-md group flex flex-col justify-between space-y-2 min-h-[140px] sm:min-h-[160px] cursor-pointer"
               >
                 <div className="flex items-start justify-between">
@@ -928,7 +1065,7 @@ export default function App() {
         {activeTab === 'calculator' && (
           <MaterialCalculatorView
             onAddMultipleToCart={handleAddMultipleToCart}
-            onSelectCraftsman={() => setActiveTab('craftsmen')}
+            onSelectCraftsman={() => handleTabChange('craftsmen')}
             onSaveProject={handleSaveProject}
           />
         )}
@@ -942,7 +1079,7 @@ export default function App() {
         {activeTab === 'solutions' && (
           <SolutionsView
             onAddMultipleToCart={handleAddMultipleToCart}
-            onSelectCraftsman={() => setActiveTab('craftsmen')}
+            onSelectCraftsman={() => handleTabChange('craftsmen')}
           />
         )}
 
@@ -972,9 +1109,9 @@ export default function App() {
             currentRole={currentRole}
             selectedStore={selectedStore}
             onOpenArticle={(slug) => navigateToArticle(slug)}
-            onNavigateCraftsmen={() => setActiveTab('craftsmen')}
-            onNavigateB2B={() => setActiveTab('b2b')}
-            onNavigateCalculator={() => setActiveTab('calculator')}
+            onNavigateCraftsmen={() => handleTabChange('craftsmen')}
+            onNavigateB2B={() => handleTabChange('b2b')}
+            onNavigateCalculator={() => handleTabChange('calculator')}
           />
         )}
 
@@ -987,8 +1124,8 @@ export default function App() {
             onBackToCenter={navigateToEditorialCenter}
             onOpenArticle={(slug) => navigateToArticle(slug)}
             onAddToCart={(p) => handleAddToCart(p, 1)}
-            onNavigateSolution={(solId) => setActiveTab('solutions')}
-            onNavigateCalculator={() => setActiveTab('calculator')}
+            onNavigateSolution={(solId) => handleTabChange('solutions')}
+            onNavigateCalculator={() => handleTabChange('calculator')}
           />
         )}
 
@@ -1086,7 +1223,7 @@ export default function App() {
           <OrderConfirmationView
             orderNumber={confirmedOrderNumber}
             onNavigateToCatalog={navigateBackToCatalog}
-            onNavigateToUserAccount={() => setActiveTab('account')}
+            onNavigateToUserAccount={() => handleTabChange('account')}
           />
         )}
 
@@ -1114,7 +1251,7 @@ export default function App() {
         isOpen={isAiModalOpen}
         onClose={() => setIsAiModalOpen(false)}
         currentRole={currentRole}
-        onNavigateTab={(tab) => setActiveTab(tab)}
+        onNavigateTab={(tab) => handleTabChange(tab)}
       />
 
       {/* Shopping Cart Drawer */}
@@ -1141,14 +1278,17 @@ export default function App() {
       />
 
       {/* Footer */}
-      <Footer onTabChange={setActiveTab} />
+      <Footer onTabChange={handleTabChange} />
 
       {/* Mobile Fixed Bottom Navigation Bar */}
       <MobileBottomNav
         activeTab={activeTab}
-        onTabChange={setActiveTab}
+        activeProductSlug={activeProductSlug}
+        onTabChange={handleTabChange}
         cartCount={cartTotalItems}
-        onOpenCart={() => setIsCartOpen(true)}
+        onOpenCart={() => {
+          setIsCartOpen(true);
+        }}
       />
 
     </div>

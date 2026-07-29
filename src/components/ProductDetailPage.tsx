@@ -4,6 +4,8 @@ import { MOCK_STORES, MOCK_PRODUCTS } from '../data/mockData';
 import { formatPriceMDL, getProductSlug } from '../utils/formatters';
 import { ProductImage } from './ProductImage';
 import { PromotionService } from '../services/PromotionService';
+import { PriceEngine } from '../services/PriceEngine';
+import { runFullMaterialCalculation } from '../utils/calculatorEngine';
 import { 
   ChevronRight, Star, ShieldCheck, CheckCircle2, Truck, Store, MapPin, 
   ShoppingCart, Heart, Calculator, Wrench, Sparkles, ArrowRight, Minus, 
@@ -110,29 +112,31 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   if (selectedStore.includes('Vulcănești') || selectedStore.includes('Vulcanesti')) currentStock = product.inStockVulcanesti ?? 0;
   if (selectedStore.includes('Taraclia')) currentStock = product.inStockTaraclia ?? 0;
 
-  // Price & Promotion calculations
+  // Price & Promotion calculations via PriceEngine (Single Source of Truth)
   const isProRole = userRole === 'meister' || userRole === 'b2b';
-  const baseUnitPrice = isProRole ? product.pricePro : product.priceRetail;
+  const priceInfo = PriceEngine.getProductPrice(product, userRole, selectedStore, quantity);
 
   const effectivePrice = PromotionService.calculateEffectivePrice({
     product,
-    basePrice: baseUnitPrice,
+    basePrice: priceInfo.regularPrice,
     userRole,
     selectedStore,
     quantity
   });
 
   const isNew = PromotionService.isNewProduct(product);
-  const unitPrice = effectivePrice.isPromoActive ? effectivePrice.promotionalPrice : baseUnitPrice;
+  const unitPrice = priceInfo.unitPrice;
   const totalPrice = unitPrice * quantity;
   const [showTermsModal, setShowTermsModal] = useState(false);
 
-  // Calculation logic for Consumption Calculator
+  // Applied calculator tracking state
+  const [appliedCalcBags, setAppliedCalcBags] = useState<number | null>(null);
+
+  // Calculation logic via Material Calculator Engine
   const factorSize = calcTileSize === '120x60' ? 1.2 : calcTileSize === '80x80' ? 1.1 : 1.0;
-  const rawKgNeeded = calcArea * (product.consumptionPerSqM || 4.5) * factorSize;
-  const totalKgWithReserve = rawKgNeeded * 1.10; // +10% reserve
-  const calculatedBags = Math.ceil(totalKgWithReserve / 25) || 1;
-  const calculatedCost = calculatedBags * unitPrice;
+  const calcResult = runFullMaterialCalculation(calcArea, product.consumptionPerSqM || 4.5, 10, 25, unitPrice, factorSize);
+  const calculatedBags = calcResult.purchasedPackagesCount;
+  const calculatedCost = calcResult.totalCostMDL;
 
   // ----------------------------------------------------
   // Complementary Products ("Completează lucrarea")
@@ -140,10 +144,8 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   const compProductIds = product.complementaryProductIds || ['prod-3', 'prod-2', 'prod-4', 'prod-spacers', 'prod-trowel'];
   const complementaryProducts = MOCK_PRODUCTS.filter(p => compProductIds.includes(p.id) && p.id !== product.id);
 
-  // Default checked complementary items
-  const [selectedComplementary, setSelectedComplementary] = useState<string[]>(
-    complementaryProducts.slice(0, 3).map(p => p.id)
-  );
+  // MANDATORY: Optional products start UNCHECKED (0 selected initially)
+  const [selectedComplementary, setSelectedComplementary] = useState<string[]>([]);
 
   const toggleComplementary = (id: string) => {
     setSelectedComplementary(prev => 
@@ -599,6 +601,14 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                 </div>
               </div>
 
+              {/* Discrete indicator when manually adjusting quantity after applying calculator */}
+              {appliedCalcBags !== null && quantity !== appliedCalcBags && (
+                <div className="bg-[#FFF4CC] border border-amber-300 text-[#7A5600] px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5">
+                  <Info className="w-4 h-4 shrink-0 text-amber-700" />
+                  <span>Cantitatea calculată recomandată este <strong>{appliedCalcBags} saci</strong>.</span>
+                </div>
+              )}
+
               <div className="space-y-2.5 pt-1">
                 {/* Primary Buy Button with ref */}
                 <button
@@ -718,24 +728,47 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
 
             {/* Calculation Result Box */}
             <div className="bg-[#EFFAF6] border border-[#00A878]/30 p-4 rounded-xl flex flex-col justify-between space-y-3">
-              <div>
-                <p className="text-[10px] text-[#5C6670] uppercase tracking-wider font-extrabold">Necesar Estimat (+10% rezerva de pierderi):</p>
-                <div className="flex items-baseline gap-2 mt-1">
-                  <span className="text-3xl font-black text-[#087F5B]">{calculatedBags} saci</span>
-                  <span className="text-xs text-[#0D1B2A] font-bold">({Math.round(totalKgWithReserve)} kg)</span>
+              <div className="space-y-2">
+                <p className="text-[11px] text-[#087F5B] uppercase tracking-wider font-extrabold flex items-center gap-1">
+                  <Calculator className="w-3.5 h-3.5" />
+                  Rezultat Calcul Matematic (+10% rezervă)
+                </p>
+
+                <div className="grid grid-cols-2 gap-2 text-xs bg-white p-3 rounded-lg border border-[#D9E2E1]">
+                  <div>
+                    <span className="text-[10px] text-[#5C6670] uppercase font-bold block">Necesar Estimat</span>
+                    <span className="font-extrabold text-[#0D1B2A]">{calcResult.requiredWeightKg} kg</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-[#5C6670] uppercase font-bold block">Cantitate de Cumpărat</span>
+                    <span className="font-extrabold text-[#087F5B]">{calcResult.purchasedPackagesCount} saci × {calcResult.packageSizeKg} kg</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-[#5C6670] uppercase font-bold block">Greutate Cumpărată</span>
+                    <span className="font-bold text-[#0D1B2A]">{calcResult.purchasedWeightKg} kg</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-[#5C6670] uppercase font-bold block">Rest Estimat</span>
+                    <span className="font-bold text-[#0D1B2A]">{calcResult.estimatedRemainderKg} kg</span>
+                  </div>
                 </div>
-                <p className="text-xs text-[#5C6670] mt-1">Cost adeziv: <strong className="text-[#0D1B2A]">{formatPriceMDL(calculatedCost)}</strong></p>
+
+                <div className="flex items-center justify-between pt-1">
+                  <span className="text-xs font-bold text-[#5C6670]">Cost Total Material:</span>
+                  <span className="text-base font-black text-[#0D1B2A]">{formatPriceMDL(calcResult.totalCostMDL)}</span>
+                </div>
               </div>
 
               <button
                 onClick={() => {
-                  setQuantity(calculatedBags);
+                  setQuantity(calcResult.purchasedPackagesCount);
+                  setAppliedCalcBags(calcResult.purchasedPackagesCount);
                   mainBuyButtonRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }}
                 className="w-full py-2.5 px-3 bg-[#087F5B] hover:bg-[#066B4D] text-white rounded-xl text-xs font-extrabold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-xs"
               >
                 <Check className="w-4 h-4 text-white" />
-                <span>Aplică {calculatedBags} saci în comanda ta</span>
+                <span>Aplică {calcResult.purchasedPackagesCount} saci în comanda ta</span>
               </button>
             </div>
           </div>
@@ -1397,6 +1430,42 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
               className="w-full bg-[#087F5B] hover:bg-[#066B4D] text-white font-extrabold py-2.5 rounded-xl text-xs transition-colors cursor-pointer"
             >
               Am înțeles
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Sticky CTA Bar */}
+      {showStickyBar && (
+        <div className="lg:hidden fixed bottom-[calc(var(--mobile-bottom-nav-height,64px)+env(safe-area-inset-bottom,0px)+8px)] left-3 right-3 bg-white/95 backdrop-blur-md border border-[#D9E2E1] p-3 rounded-2xl shadow-xl z-40 flex items-center justify-between gap-3">
+          <div>
+            <span className="text-[10px] text-[#5C6670] font-bold uppercase block truncate max-w-[120px]">{product.name}</span>
+            <span className="text-base font-black text-[#0D1B2A]">{formatPriceMDL(totalPrice)}</span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <div className="flex items-center bg-[#F8FAF9] border border-[#D9E2E1] rounded-lg p-0.5">
+              <button
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                className="w-7 h-7 flex items-center justify-center font-black text-[#0D1B2A]"
+              >
+                −
+              </button>
+              <span className="w-7 text-center font-black text-xs">{quantity}</span>
+              <button
+                onClick={() => setQuantity(quantity + 1)}
+                className="w-7 h-7 flex items-center justify-center font-black text-[#0D1B2A]"
+              >
+                +
+              </button>
+            </div>
+
+            <button
+              onClick={handleAdd}
+              className="py-2.5 px-4 bg-[#087F5B] text-white rounded-xl font-black text-xs flex items-center gap-1.5 shadow-xs shrink-0 cursor-pointer"
+            >
+              <ShoppingCart className="w-4 h-4 text-white" />
+              <span>Adaugă</span>
             </button>
           </div>
         </div>

@@ -6,7 +6,11 @@ html {
 }
 
 .scroll-mt-header {
-  scroll-margin-top: var(--header-total-height);
+  scroll-margin-top: calc(var(--header-total-height) + 16px);
+}
+
+.pt-header-offset {
+  padding-top: calc(var(--header-total-height) + 16px);
 }
 
 /* Hide scrollbar for clean horizontal scrolling */

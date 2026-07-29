@@ -38,6 +38,9 @@
   --cb-info: #2563A6;
   --cb-info-bg: #E7F0FA;
 
+  --header-full-height: 124px;
+  --header-compact-height: 68px;
+  --navigation-height: 44px;
   --header-total-height: 124px;
   --mobile-nav-height: 64px;
   --product-buybar-height: 72px;
@@ -45,6 +48,7 @@
 
 @media (max-width: 768px) {
   :root {
+    --header-full-height: 110px;
     --header-total-height: 110px;
   }
 }

@@ -169,6 +169,37 @@ export interface Translations {
   aiDisclaimer: string;
   noResultsFound: string;
   trySearching: string;
+
+  // Calculator & Weight Breakdown
+  calcAreaLabel: string;
+  calcRequiredKg: string;
+  calcPurchasedWeight: string;
+  calcEstimatedRemainder: string;
+  calcBagsToBuy: string;
+
+  // Bundle & Complementary
+  bundleTitle: string;
+  bundlePricePerUnit: string;
+  bundleSubtotalPosition: string;
+  bundleDiscountAmount: string;
+  bundleTotalLabel: string;
+  bundleNotice: string;
+  compProductsTitle: string;
+  compProductsSubtitle: string;
+  noProductsSelected: string;
+  selectProductsCTA: string;
+
+  // Technical & Stores
+  techDataDemoNotice: string;
+  imageUpdatingPlaceholder: string;
+  storeStatusActive: string;
+  storeStatusPlanned: string;
+  storePlannedNetwork: string;
+
+  // Footer extra
+  footerTerms: string;
+  footerPrivacy: string;
+  footerRightsReserved: string;
 }
 
 const translationsRO: Translations = {
@@ -254,7 +285,7 @@ const translationsRO: Translations = {
   allCategoriesTab: 'Toate Categoriile',
 
   storesNetworkTitle: 'Rețeaua de magazine & Lockers 24/7 CodeBau',
-  storesNetworkSubtitle: 'Operăm cu stocuri reale și 4 magazine fizice de mari dimensiuni în Cahul, Cantemir, Vulcănești și Taraclia + lockere automatizate pentru ridicare 24/7.',
+  storesNetworkSubtitle: 'Operăm cu stocuri reale și magazine fizice în Cahul, Cantemir, Vulcănești și Taraclia + lockere automatizate pentru ridicare 24/7.',
   viewLocationsSchedule: 'Vezi locațiile & programul',
   dopGuaranteed: 'Declarații de Performanță (DoP) garantate',
   craneDelivery: 'Livrare cu macara pe șantier',
@@ -324,7 +355,34 @@ const translationsRO: Translations = {
   aiTitle: 'Asistent AI CodeBau',
   aiDisclaimer: 'Răspuns bazat pe documentația tehnică disponibilă.',
   noResultsFound: 'Nu am găsit exact acest produs.',
-  trySearching: 'Încearcă să folosești un termen mai general sau pune o întrebare Asistentului AI.'
+  trySearching: 'Încearcă să folosești un termen mai general sau pune o întrebare Asistentului AI.',
+
+  calcAreaLabel: 'Suprafață de placat',
+  calcRequiredKg: 'Necesar estimat (cu rezervă 10%)',
+  calcPurchasedWeight: 'Greutate cumpărată',
+  calcEstimatedRemainder: 'Rezervă/rămășiță estimată',
+  calcBagsToBuy: 'Cantitate de cumpărat',
+
+  bundleTitle: 'Pachet recomandat de proiect',
+  bundlePricePerUnit: 'Preț per sac',
+  bundleSubtotalPosition: 'Subtotal poziție',
+  bundleDiscountAmount: 'Reducere pachet',
+  bundleTotalLabel: 'Total pachet complet',
+  bundleNotice: 'Pachetul folosește prețurile standard și aplică o reducere de 10% întregului set.',
+  compProductsTitle: 'Accesorii & produse opționale',
+  compProductsSubtitle: 'Unelte și accesorii recomandate pentru executarea corectă a lucrării.',
+  noProductsSelected: 'Niciun produs selectat',
+  selectProductsCTA: 'Selectează produsele dorite',
+
+  techDataDemoNotice: 'Informații demonstrative. Datele tehnice finale vor fi validate conform documentației oficiale a producătorului.',
+  imageUpdatingPlaceholder: 'Imagine în curs de actualizare',
+  storeStatusActive: 'Activ',
+  storeStatusPlanned: 'Planificat',
+  storePlannedNetwork: 'Rețeaua CodeBau planificată pentru sudul Moldovei',
+
+  footerTerms: 'Termeni și condiții',
+  footerPrivacy: 'Politica de confidențialitate',
+  footerRightsReserved: 'Toate drepturile rezervate. Construiește cu încredere.'
 };
 
 const translationsRU: Translations = {
@@ -352,7 +410,7 @@ const translationsRU: Translations = {
   meisterClub: 'Meister Club (Мастера)',
   business360: 'Business 360 (Компании)',
 
-  heroTitle1: 'Скажите, что вы строите.',
+  heroTitle1: 'Расскажите, что вы строите.',
   heroTitle2: 'Мы рассчитаем, подготовим и доставим.',
   heroSubtitle: 'Совместимые товары, рассчитанное количество, реальное наличие в Кагуле и запланированная доставка для вашего проекта.',
   whatDoYouWantToDo: 'Что вы хотите сделать сегодня?',
@@ -410,23 +468,23 @@ const translationsRU: Translations = {
   allCategoriesTab: 'Все категории',
 
   storesNetworkTitle: 'Сеть магазинов и локкеров 24/7 CodeBau',
-  storesNetworkSubtitle: 'Мы работаем с реальным наличием и 4 крупными магазинами в Кагуле, Кантемире, Вулканештах и Тараклии + автоматизированные локкеры 24/7.',
-  viewLocationsSchedule: 'Локации и график работы',
-  dopGuaranteed: 'Гарантированные Декларации качества (DoP)',
-  craneDelivery: 'Доставка манипулятором на объект',
-  lockers247: 'Локкеры выдачи 24/7',
-  return30Days: 'Гарантия возврата 30 дней',
+  storesNetworkSubtitle: 'Оперативные склады и 4 физических магазина в Кагуле, Кантемире, Вулканештах и Тараклии + автопостаматы 24/7.',
+  viewLocationsSchedule: 'Посмотреть адреса и график',
+  dopGuaranteed: 'Декларации характеристик (DoP) в наличии',
+  craneDelivery: 'Доставка на объект с разгрузкой краном',
+  lockers247: 'Постаматы выгрузки 24/7',
+  return30Days: 'Гарантированный возврат 30 дней',
   southMoldovaBadge: 'Юг Республики Молдова',
-  badgeLogisticCenter: 'Логистический Центр',
-  badgeStoreShowroom: 'Магазин и Шоурум',
+  badgeLogisticCenter: 'Логистический центр',
+  badgeStoreShowroom: 'Магазин и шоурум',
   badgeMaterialsDepot: 'Склад материалов',
-  badgeLockerStore: 'Локкер 24/7 + Магазин',
+  badgeLockerStore: 'Постамат 24/7 + Магазин',
 
-  checkoutWithoutAccount: 'Покупка без регистрации',
+  checkoutWithoutAccount: 'Купить без регистрации',
   total: 'Итого',
-  subtotal: 'Подытог',
+  subtotal: 'Промежуточный итог',
   quantity: 'Количество',
-  addToCart: 'В корзину',
+  addToCart: 'Добавить в корзину',
   buyNow: 'Купить сейчас',
   inStock: 'В наличии',
   outOfStock: 'Нет в наличии',
@@ -480,7 +538,34 @@ const translationsRU: Translations = {
   aiTitle: 'ИИ Консультант CodeBau',
   aiDisclaimer: 'Ответ на основе доступной технической документации.',
   noResultsFound: 'Точный товар не найден.',
-  trySearching: 'Попробуйте ввести более общий термин или задайте вопрос ИИ Консультанту.'
+  trySearching: 'Попробуйте ввести более общий термин или задайте вопрос ИИ Консультанту.',
+
+  calcAreaLabel: 'Площадь облицовки',
+  calcRequiredKg: 'Расчетный расход (с запасом 10%)',
+  calcPurchasedWeight: 'Общий вес покупки',
+  calcEstimatedRemainder: 'Ориентировочный остаток',
+  calcBagsToBuy: 'К покупке',
+
+  bundleTitle: 'Рекомендуемый комплект для проекта',
+  bundlePricePerUnit: 'Цена за мешок',
+  bundleSubtotalPosition: 'Сумма позиции',
+  bundleDiscountAmount: 'Скидка за комплект',
+  bundleTotalLabel: 'Стоимость полного комплекта',
+  bundleNotice: 'Комплект использует стандартные цены и применяет скидку 10% на весь набор.',
+  compProductsTitle: 'Аксессуары и сопутствующие товары',
+  compProductsSubtitle: 'Рекомендуемые инструменты и принадлежности для правильного выполнения работ.',
+  noProductsSelected: 'Товары не выбраны',
+  selectProductsCTA: 'Выберите нужные товары',
+
+  techDataDemoNotice: 'Демонстрационные данные. Окончательные технические характеристики будут подтверждены официальной документацией производителя.',
+  imageUpdatingPlaceholder: 'Изображение обновляется',
+  storeStatusActive: 'Работает',
+  storeStatusPlanned: 'Запланирован',
+  storePlannedNetwork: 'Планируемая сеть CodeBau на юге Молдовы',
+
+  footerTerms: 'Условия использования',
+  footerPrivacy: 'Политика конфиденциальности',
+  footerRightsReserved: 'Все права защищены. Стройте с уверенностью.'
 };
 
 interface LanguageContextType {
