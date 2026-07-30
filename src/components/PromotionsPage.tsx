@@ -11,6 +11,7 @@ interface PromotionsPageProps {
   onAddToCart: (p: Product) => void;
   onOpenDetail: (p: Product) => void;
   onNavigateHome: () => void;
+  products?: Product[];
 }
 
 export const PromotionsPage: React.FC<PromotionsPageProps> = ({
@@ -18,15 +19,17 @@ export const PromotionsPage: React.FC<PromotionsPageProps> = ({
   selectedStore,
   onAddToCart,
   onOpenDetail,
-  onNavigateHome
+  onNavigateHome,
+  products
 }) => {
   const [selectedRoleFilter, setSelectedRoleFilter] = useState<UserRole | 'all'>('all');
   const [selectedStoreFilter, setSelectedStoreFilter] = useState<string>('all');
 
   const activePromotions = PromotionService.getActivePromotions(selectedStore);
+  const productSource = products || MOCK_PRODUCTS;
 
   // Filter products that have active promotion for given store & role
-  const promotionalProducts = MOCK_PRODUCTS.filter(p => {
+  const promotionalProducts = productSource.filter(p => {
     const basePrice = (currentRole === 'meister' || currentRole === 'b2b') ? p.pricePro : p.priceRetail;
     const res = PromotionService.calculateEffectivePrice({
       product: p,

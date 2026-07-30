@@ -273,6 +273,8 @@ export function catalogProductToPublicProduct(catProd: CatalogProduct, lang: 'ro
     slug: catProd.slug,
     technicalDataStatus: catProd.dataValidationStatus === 'validated' ? 'official' : 'verified',
     qualityNote: catProd.qualityNote,
-    lockerEligible: catProd.logistics.lockerEligible
+    lockerEligible: catProd.logistics.lockerEligible,
+    documents: catProd.documents,
+    rawCatalogProduct: catProd
   };
 }

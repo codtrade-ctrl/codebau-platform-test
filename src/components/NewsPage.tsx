@@ -11,6 +11,7 @@ interface NewsPageProps {
   onAddToCart: (p: Product) => void;
   onOpenDetail: (p: Product) => void;
   onNavigateHome: () => void;
+  products?: Product[];
 }
 
 export const NewsPage: React.FC<NewsPageProps> = ({
@@ -18,13 +19,16 @@ export const NewsPage: React.FC<NewsPageProps> = ({
   selectedStore,
   onAddToCart,
   onOpenDetail,
-  onNavigateHome
+  onNavigateHome,
+  products
 }) => {
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'newest' | 'price-asc' | 'price-desc'>('newest');
 
+  const productSource = products || MOCK_PRODUCTS;
+
   // Filter only new products
-  const allNewProducts = MOCK_PRODUCTS.filter(p => PromotionService.isNewProduct(p));
+  const allNewProducts = productSource.filter(p => PromotionService.isNewProduct(p));
 
   // Subcategories present
   const subcategories = Array.from(new Set(allNewProducts.map(p => p.subcategory || p.category)));

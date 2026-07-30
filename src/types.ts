@@ -53,6 +53,8 @@ export interface Product {
   launchDate?: string; // YYYY-MM-DD
   newUntil?: string; // YYYY-MM-DD
   isManuallyMarkedNew?: boolean;
+  documents?: any[];
+  rawCatalogProduct?: any;
 }
 
 export interface MaterialCalcRequirement {

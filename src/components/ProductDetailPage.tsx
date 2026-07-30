@@ -25,6 +25,7 @@ interface ProductDetailPageProps {
   onBackToCatalog: () => void;
   onOpenAIAssistant: (initialPrompt?: string) => void;
   onOpenMeisterConnect?: () => void;
+  allProducts?: Product[];
 }
 
 export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
@@ -37,7 +38,8 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   onNavigateToProduct,
   onBackToCatalog,
   onOpenAIAssistant,
-  onOpenMeisterConnect
+  onOpenMeisterConnect,
+  allProducts
 }) => {
   // State
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -141,8 +143,9 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   // ----------------------------------------------------
   // Complementary Products ("Completează lucrarea")
   // ----------------------------------------------------
+  const productSourceList = allProducts || MOCK_PRODUCTS;
   const compProductIds = product.complementaryProductIds || ['prod-3', 'prod-2', 'prod-4', 'prod-spacers', 'prod-trowel'];
-  const complementaryProducts = MOCK_PRODUCTS.filter(p => compProductIds.includes(p.id) && p.id !== product.id);
+  const complementaryProducts = productSourceList.filter(p => compProductIds.includes(p.id) && p.id !== product.id);
 
   // MANDATORY: Optional products start UNCHECKED (0 selected initially)
   const [selectedComplementary, setSelectedComplementary] = useState<string[]>([]);
@@ -169,7 +172,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   // Similar Products ("Produse similare")
   // ----------------------------------------------------
   const similarProductIds = product.relatedProductIds || ['prod-cm11', 'prod-cm16', 'prod-cm117'];
-  const similarProducts = MOCK_PRODUCTS.filter(p => similarProductIds.includes(p.id) && p.id !== product.id);
+  const similarProducts = productSourceList.filter(p => similarProductIds.includes(p.id) && p.id !== product.id);
 
   // ----------------------------------------------------
   // Recommended Project Bundle ("Pachet recomandat de proiect")
@@ -1147,25 +1150,53 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
             {activeTab === 'documente' && (
               <div id="panel-documente" role="tabpanel" aria-labelledby="tab-documente" className="space-y-4 animate-in fade-in duration-200">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {[
-                    { title: 'Fișă Tehnică — document demonstrativ', size: '1.2 MB', code: 'FT-CM17-RO' },
-                    { title: 'Fișă de Securitate — document demonstrativ', size: '850 KB', code: 'FS-CER-CM17' },
-                    { title: 'Declarație de Performanță C2TE S1', size: '620 KB', code: 'DoP-00128' },
-                    { title: 'Ghid de Montaj Plăci Mari', size: '2.4 MB', code: 'GUIDE-TILING-2026' }
-                  ].map((doc, idx) => (
-                    <div key={idx} className="bg-[#F8FAF9] border border-[#D9E2E1] p-4 rounded-xl flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <FileText className="w-8 h-8 text-[#087F5B] shrink-0" />
-                        <div>
-                          <p className="font-extrabold text-[#0D1B2A] text-xs">{doc.title}</p>
-                          <p className="text-[10px] text-[#5C6670] font-mono">{doc.code} • {doc.size}</p>
+                  {product.documents && product.documents.length > 0 ? (
+                    product.documents.map((doc: any, idx: number) => {
+                      const titleStr = typeof doc.title === 'string' ? doc.title : (doc.title?.ro || doc.fileName || 'Document Tehnic');
+                      const downloadUrl = doc.blobUrl || doc.url || '#';
+                      return (
+                        <div key={idx} className="bg-[#F8FAF9] border border-[#D9E2E1] p-4 rounded-xl flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-3">
+                            <FileText className="w-8 h-8 text-[#087F5B] shrink-0" />
+                            <div>
+                              <p className="font-extrabold text-[#0D1B2A] text-xs">{titleStr}</p>
+                              <p className="text-[10px] text-[#5C6670] font-mono">{doc.type || 'PDF'} • {doc.language ? doc.language.toUpperCase() : 'RO'}</p>
+                            </div>
+                          </div>
+                          <a 
+                            href={downloadUrl}
+                            download={doc.fileName || 'document.pdf'}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2 bg-white hover:bg-[#E9ECEF] text-[#0D1B2A] rounded-xl border border-[#D9E2E1] transition-colors cursor-pointer flex items-center gap-1 text-xs font-bold" 
+                            title="Descarcă PDF"
+                          >
+                            <Download className="w-4 h-4 text-[#087F5B]" />
+                          </a>
                         </div>
+                      );
+                    })
+                  ) : (
+                    [
+                      { title: 'Fișă Tehnică — document demonstrativ', size: '1.2 MB', code: 'FT-CM17-RO' },
+                      { title: 'Fișă de Securitate — document demonstrativ', size: '850 KB', code: 'FS-CER-CM17' },
+                      { title: 'Declarație de Performanță C2TE S1', size: '620 KB', code: 'DoP-00128' },
+                      { title: 'Ghid de Montaj Plăci Mari', size: '2.4 MB', code: 'GUIDE-TILING-2026' }
+                    ].map((doc, idx) => (
+                      <div key={idx} className="bg-[#F8FAF9] border border-[#D9E2E1] p-4 rounded-xl flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                          <FileText className="w-8 h-8 text-[#087F5B] shrink-0" />
+                          <div>
+                            <p className="font-extrabold text-[#0D1B2A] text-xs">{doc.title}</p>
+                            <p className="text-[10px] text-[#5C6670] font-mono">{doc.code} • {doc.size}</p>
+                          </div>
+                        </div>
+                        <button className="p-2 bg-white hover:bg-[#E9ECEF] text-[#0D1B2A] rounded-xl border border-[#D9E2E1] transition-colors cursor-pointer" title="Descarcă PDF">
+                          <Download className="w-4 h-4" />
+                        </button>
                       </div>
-                      <button className="p-2 bg-white hover:bg-[#E9ECEF] text-[#0D1B2A] rounded-xl border border-[#D9E2E1] transition-colors cursor-pointer" title="Descarcă PDF">
-                        <Download className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </div>
             )}

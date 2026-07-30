@@ -33,6 +33,7 @@ export const CatalogPilotAdminView: React.FC<CatalogPilotAdminViewProps> = ({
       setProducts(all);
       const filtered = await ProductRepository.searchProducts(filterParams);
       setFilteredProducts(filtered);
+      window.dispatchEvent(new CustomEvent('codebau-catalog-updated'));
     } catch (e) {
       console.error('Error loading products for admin:', e);
     } finally {

@@ -30,6 +30,7 @@ export const ProductEditorWizard: React.FC<ProductEditorWizardProps> = ({
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [uploadingImage, setUploadingImage] = useState<boolean>(false);
   const [uploadingDoc, setUploadingDoc] = useState<boolean>(false);
+  const [customImageUrl, setCustomImageUrl] = useState<string>('');
 
   // Auto-save draft locally on change
   useEffect(() => {
@@ -755,16 +756,72 @@ export const ProductEditorWizard: React.FC<ProductEditorWizardProps> = ({
 
                 <label className="bg-[#00A878] hover:bg-[#008f66] text-white text-xs font-extrabold px-4 py-2 rounded-xl flex items-center gap-1.5 cursor-pointer shadow-xs">
                   <Upload className="w-4 h-4" />
-                  <span>Încarcă Imagini</span>
-                  <input type="file" multiple accept="image/*" onChange={handleImageUpload} className="hidden" />
+                  <span>{uploadingImage ? 'Se procesează...' : 'Încarcă Imagini'}</span>
+                  <input type="file" multiple accept="image/*" onChange={handleImageUpload} disabled={uploadingImage} className="hidden" />
                 </label>
               </div>
 
-              {/* Upload Drag Drop Area */}
-              <div className="border-2 border-dashed border-[#D9E2E1] hover:border-[#00A878] bg-[#F8FAF9] p-8 rounded-2xl text-center space-y-2">
-                <ImageIcon className="w-8 h-8 text-slate-400 mx-auto" />
-                <div className="text-xs font-bold text-[#0D1B2A]">Trage imaginile aici sau apasă butonul de încărcare</div>
-                <p className="text-[11px] text-slate-400">Recomandat: minimum 1200x1200px, fundal alb sau curat, format WebP / JPEG / PNG</p>
+              {/* Upload Drag Drop Area & URL Input */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div 
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                      const fakeEvent = { target: { files: e.dataTransfer.files } } as any;
+                      handleImageUpload(fakeEvent);
+                    }
+                  }}
+                  className="md:col-span-2 border-2 border-dashed border-[#D9E2E1] hover:border-[#00A878] bg-[#F8FAF9] p-6 rounded-2xl text-center space-y-2 relative transition-colors"
+                >
+                  <label className="cursor-pointer block inset-0">
+                    <ImageIcon className="w-8 h-8 text-[#00A878] mx-auto mb-2" />
+                    <div className="text-xs font-bold text-[#0D1B2A]">
+                      {uploadingImage ? 'Se optimizează și se salveză imaginea...' : 'Apasă aici sau trage fișiere foto (JPG, PNG, WebP)'}
+                    </div>
+                    <p className="text-[11px] text-slate-400 mt-1">Imaginile încărcate sunt convertite automat în format persistent de înaltă calitate.</p>
+                    <input type="file" multiple accept="image/*" onChange={handleImageUpload} disabled={uploadingImage} className="hidden" />
+                  </label>
+                </div>
+
+                {/* Direct URL Input */}
+                <div className="bg-[#F8FAF9] border border-[#D9E2E1] p-5 rounded-2xl flex flex-col justify-between space-y-3">
+                  <div>
+                    <div className="text-xs font-black text-[#0D1B2A] uppercase mb-1">Sau adaugă link URL imagine</div>
+                    <p className="text-[11px] text-slate-500">Lipiți un link web direct către o imagine (ex. Unsplash sau server extern):</p>
+                  </div>
+                  <div className="space-y-2">
+                    <input
+                      type="url"
+                      value={customImageUrl}
+                      onChange={(e) => setCustomImageUrl(e.target.value)}
+                      placeholder="https://images.unsplash.com/..."
+                      className="w-full bg-white border border-[#D9E2E1] text-xs font-bold p-2.5 rounded-xl outline-none"
+                    />
+                    <button
+                      disabled={!customImageUrl.trim()}
+                      onClick={() => {
+                        if (!customImageUrl.trim()) return;
+                        const isFirst = formData.images.length === 0;
+                        const newImg = {
+                          id: `img-${Date.now()}-${Math.random().toString().slice(2, 6)}`,
+                          productId: formData.id,
+                          type: isFirst ? 'main' : 'detail',
+                          fileName: 'imagine-externa',
+                          mimeType: 'image/jpeg',
+                          sortOrder: isFirst ? 1 : 10,
+                          alt: { ro: formData.name.ro, ru: formData.name.ru },
+                          url: customImageUrl.trim()
+                        } as any;
+                        setFormData({ ...formData, images: [...formData.images, newImg] });
+                        setCustomImageUrl('');
+                      }}
+                      className="w-full bg-[#0D1B2A] hover:bg-[#1A3448] disabled:bg-slate-300 text-white font-extrabold text-xs py-2 rounded-xl cursor-pointer transition-colors"
+                    >
+                      Adaugă Imagine din URL
+                    </button>
+                  </div>
+                </div>
               </div>
 
               {/* Images Grid */}

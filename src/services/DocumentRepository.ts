@@ -2,6 +2,15 @@ import { catalogDb } from './db';
 import { ProductDocumentDetail, LocalizedText } from '../types/catalog';
 
 export class DocumentRepositoryService {
+  async fileToDataUrl(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (err) => reject(err);
+      reader.readAsDataURL(file);
+    });
+  }
+
   async uploadDocument(
     productId: string,
     file: File,
@@ -11,9 +20,7 @@ export class DocumentRepositoryService {
   ): Promise<ProductDocumentDetail> {
     const id = `doc-${productId}-${Date.now()}-${Math.random().toString().slice(2, 6)}`;
 
-    const arrayBuffer = await file.arrayBuffer();
-    const blob = new Blob([arrayBuffer], { type: file.type || 'application/pdf' });
-    const blobUrl = URL.createObjectURL(blob);
+    const dataUrl = await this.fileToDataUrl(file);
 
     const docDetail: ProductDocumentDetail = {
       id,
@@ -30,19 +37,19 @@ export class DocumentRepositoryService {
       fileSize: file.size,
       documentDate: new Date().toISOString().slice(0, 10),
       version: '1.0',
-      blobUrl
+      blobUrl: dataUrl
     };
 
     try {
       await catalogDb.put('documents', {
         id,
         productId,
-        blob,
+        dataUrl,
         fileName: file.name,
         mimeType: file.type || 'application/pdf'
       });
     } catch (e) {
-      console.warn('Could not store document blob in IndexedDB:', e);
+      console.warn('Could not store document in IndexedDB:', e);
     }
 
     return docDetail;

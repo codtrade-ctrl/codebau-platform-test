@@ -31,6 +31,7 @@ import { EditorialCenterView } from './components/EditorialCenterView';
 import { ArticleDetailPage } from './components/ArticleDetailPage';
 import { AdminArticlesView } from './components/AdminArticlesView';
 import { CatalogPilotAdminView } from './components/admin/CatalogPilotAdminView';
+import { ProductRepository } from './services/ProductRepository';
 import { getProductBySlug, getProductSlug } from './utils/formatters';
 import { defaultCartRepository, getCartSessionId, logTestEvent } from './services/cartRepository';
 import { useLanguage } from './utils/i18n';
@@ -248,6 +249,38 @@ export default function App() {
     scrollToPageTop({ top: 0, behavior: 'auto' });
   };
 
+  // Dynamic Catalog Products State (Synced with Admin IndexedDB ProductRepository)
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadPublishedProducts = async () => {
+      try {
+        const lang = (t && t.lang === 'ru') ? 'ru' : 'ro';
+        const published = await ProductRepository.getPublishedProducts(lang);
+        if (isMounted && published && published.length > 0) {
+          setProducts(published);
+        }
+      } catch (err) {
+        console.error('Failed to load published products from repository:', err);
+      }
+    };
+
+    loadPublishedProducts();
+
+    const handleCatalogUpdate = () => {
+      loadPublishedProducts();
+    };
+
+    window.addEventListener('codebau-catalog-updated', handleCatalogUpdate);
+    return () => {
+      isMounted = false;
+      window.removeEventListener('codebau-catalog-updated', handleCatalogUpdate);
+    };
+  }, [t.lang, activeTab]);
+
+  const activeProducts = products.length > 0 ? products : MOCK_PRODUCTS;
+
   // Catalog Filters
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -439,16 +472,16 @@ export default function App() {
 
   const handleRunQAScenario = (scenarioId: number) => {
     if (scenarioId === 1) {
-      handleAddToCart(MOCK_PRODUCTS[0], 1);
+      handleAddToCart(activeProducts[0], 1);
       setIsCartOpen(true);
     } else if (scenarioId === 2) {
-      handleAddToCart(MOCK_PRODUCTS[0], 10);
-      handleAddToCart(MOCK_PRODUCTS[1] || MOCK_PRODUCTS[0], 2);
+      handleAddToCart(activeProducts[0], 10);
+      handleAddToCart(activeProducts[1] || activeProducts[0], 2);
       setIsCartOpen(true);
     } else if (scenarioId === 5) {
       navigateToCart();
     } else if (scenarioId === 14) {
-      handleAddToCart(MOCK_PRODUCTS[0], 3);
+      handleAddToCart(activeProducts[0], 3);
       navigateToCart();
     } else {
       setIsCartOpen(true);
@@ -484,7 +517,7 @@ export default function App() {
   };
 
   // Filter products for Catalog safely
-  const filteredProducts = MOCK_PRODUCTS.filter(p => {
+  const filteredProducts = activeProducts.filter(p => {
     const q = (searchQuery || '').toLowerCase();
     const nameMatch = (p.name || '').toLowerCase().includes(q);
     const brandMatch = (p.brand || '').toLowerCase().includes(q);
@@ -823,7 +856,7 @@ export default function App() {
 
             {/* Homepage Commercial Sections */}
             <PromotionsSection
-              products={MOCK_PRODUCTS}
+              products={activeProducts}
               currentRole={currentRole}
               selectedStore={selectedStore}
               onAddToCart={(p) => handleAddToCart(p, 1)}
@@ -832,7 +865,7 @@ export default function App() {
             />
 
             <NewsSection
-              products={MOCK_PRODUCTS}
+              products={activeProducts}
               currentRole={currentRole}
               selectedStore={selectedStore}
               onAddToCart={(p) => handleAddToCart(p, 1)}
@@ -872,7 +905,7 @@ export default function App() {
                       : 'bg-[#F8FAF9] text-[#5C6670] hover:text-[#0D1B2A]'
                   }`}
                 >
-                  {t.allProducts} ({MOCK_PRODUCTS.length})
+                  {t.allProducts} ({activeProducts.length})
                 </button>
 
                 <button
@@ -1027,7 +1060,7 @@ export default function App() {
 
         {/* VIEW: FULL PRODUCT DETAIL PAGE */}
         {activeTab === 'product_detail' && activeProductSlug && (() => {
-          const currentProd = getProductBySlug(activeProductSlug, MOCK_PRODUCTS) || MOCK_PRODUCTS[0];
+          const currentProd = getProductBySlug(activeProductSlug, activeProducts) || activeProducts[0];
           return (
             <ProductDetailPage
               product={currentProd}
@@ -1040,6 +1073,7 @@ export default function App() {
               onBackToCatalog={navigateBackToCatalog}
               onOpenAIAssistant={() => setIsAiModalOpen(true)}
               onOpenMeisterConnect={() => handleTabChange('craftsmen')}
+              allProducts={activeProducts}
             />
           );
         })()}
@@ -1052,6 +1086,7 @@ export default function App() {
             onAddToCart={(p) => handleAddToCart(p, 1)}
             onOpenDetail={(p) => navigateToProduct(getProductSlug(p))}
             onNavigateHome={navigateBackToCatalog}
+            products={activeProducts}
           />
         )}
 
@@ -1063,6 +1098,7 @@ export default function App() {
             onAddToCart={(p) => handleAddToCart(p, 1)}
             onOpenDetail={(p) => navigateToProduct(getProductSlug(p))}
             onNavigateHome={navigateBackToCatalog}
+            products={activeProducts}
           />
         )}
         {activeTab === 'calculator' && (
