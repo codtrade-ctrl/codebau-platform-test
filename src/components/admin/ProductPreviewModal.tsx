@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { CatalogProduct, catalogProductToPublicProduct } from '../../types/catalog';
-import ProductDetailPage from '../ProductDetailPage';
+import { ProductDetailPage } from '../ProductDetailPage';
 import { Smartphone, Monitor, Globe, X, AlertTriangle } from 'lucide-react';
 
 interface ProductPreviewModalProps {

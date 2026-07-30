@@ -75,11 +75,28 @@ export const Header: React.FC<HeaderProps> = ({
   const megaMenuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
-  // Track window scroll to make sticky header compact
+  // Track window scroll to make sticky header compact with hysteresis (compact at >120px, full at <40px)
   useEffect(() => {
+    let ticking = false;
+    let isScrolledState = false;
+
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+          if (scrollY > 120 && !isScrolledState) {
+            isScrolledState = true;
+            setIsScrolled(true);
+          } else if (scrollY < 40 && isScrolledState) {
+            isScrolledState = false;
+            setIsScrolled(false);
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
+
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -148,11 +165,11 @@ export const Header: React.FC<HeaderProps> = ({
   ];
 
   return (
-    <header className="sticky top-0 z-40 bg-[#0D1B2A] text-white shadow-xl border-b border-[#1A3448] transition-all duration-200">
+    <header className="sticky top-0 z-40 bg-[#0D1B2A] text-white shadow-xl border-b border-[#1A3448]">
       
       {/* ================= ZONE 1: THIN INFORMATIONAL TOP BAR (Hidden on scroll for compact header) ================= */}
       {!isScrolled && (
-        <div className="bg-[#081420] border-b border-[#1A3448] text-xs py-1.5 px-3 sm:px-4 transition-all">
+        <div className="bg-[#081420] border-b border-[#1A3448] text-xs py-1.5 px-3 sm:px-4">
           <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
             
             {/* Left: Store Selector + Live Stock Badge */}
@@ -244,7 +261,7 @@ export const Header: React.FC<HeaderProps> = ({
       )}
 
       {/* ================= ZONE 2: MAIN HEADER (Compact height on scroll) ================= */}
-      <div className={`max-w-7xl mx-auto px-4 ${isScrolled ? 'py-1.5' : 'py-2.5'} transition-all`}>
+      <div className={`max-w-7xl mx-auto px-4 ${isScrolled ? 'py-1.5' : 'py-2.5'}`}>
         <div className="flex items-center justify-between gap-3 md:gap-6">
           
           {/* Logo */}
@@ -506,19 +523,22 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* ================= ZONE 3: MAIN NAVIGATION MENU ================= */}
-      <nav className="hidden md:block bg-[#081420] border-t border-[#1A3448] text-xs font-medium">
+      <nav className="hidden md:block bg-[#081420] border-t border-[#1A3448] text-xs font-bold">
         <div className="max-w-7xl mx-auto px-4 flex items-center gap-1 relative">
           
           {/* 1. Acasă */}
           <button
             onClick={() => handleTabChange('home')}
-            className={`px-3.5 py-2.5 transition-all whitespace-nowrap cursor-pointer ${
+            className={`px-3.5 py-2.5 relative transition-colors duration-150 whitespace-nowrap cursor-pointer ${
               activeTab === 'home'
-                ? 'text-[#00A878] font-extrabold border-b-2 border-[#00A878] bg-[#00A878]/10'
+                ? 'text-[#00A878] bg-[#00A878]/10'
                 : 'text-slate-300 hover:text-white hover:bg-[#13283A]'
             }`}
           >
             {t.navHome}
+            {activeTab === 'home' && (
+              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#00A878]" />
+            )}
           </button>
 
           {/* 2. Produse (Mega-Menu) */}
@@ -540,15 +560,18 @@ export const Header: React.FC<HeaderProps> = ({
                 handleTabChange('catalog');
                 setMegaMenuOpen(!megaMenuOpen);
               }}
-              className={`px-3.5 py-2.5 transition-all whitespace-nowrap flex items-center gap-1.5 cursor-pointer ${
+              className={`px-3.5 py-2.5 relative transition-colors duration-150 whitespace-nowrap flex items-center gap-1.5 cursor-pointer ${
                 activeTab === 'catalog' || megaMenuOpen
-                  ? 'text-[#00A878] font-extrabold border-b-2 border-[#00A878] bg-[#00A878]/10'
+                  ? 'text-[#00A878] bg-[#00A878]/10'
                   : 'text-slate-300 hover:text-white hover:bg-[#13283A]'
               }`}
             >
               <Layers className="w-3.5 h-3.5 text-[#00A878]" />
               <span>{t.navProducts}</span>
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform ${megaMenuOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-150 ${megaMenuOpen ? 'rotate-180' : ''}`} />
+              {(activeTab === 'catalog' || megaMenuOpen) && (
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#00A878]" />
+              )}
             </button>
           </div>
 
@@ -568,56 +591,68 @@ export const Header: React.FC<HeaderProps> = ({
                 handleTabChange('solutions');
                 setProjectsMegaOpen(!projectsMegaOpen);
               }}
-              className={`px-3.5 py-2.5 transition-all whitespace-nowrap flex items-center gap-1.5 cursor-pointer ${
+              className={`px-3.5 py-2.5 relative transition-colors duration-150 whitespace-nowrap flex items-center gap-1.5 cursor-pointer ${
                 activeTab === 'solutions' || activeTab === 'calculator' || projectsMegaOpen
-                  ? 'text-[#00A878] font-extrabold border-b-2 border-[#00A878] bg-[#00A878]/10'
+                  ? 'text-[#00A878] bg-[#00A878]/10'
                   : 'text-slate-300 hover:text-white hover:bg-[#13283A]'
               }`}
             >
               <Calculator className="w-3.5 h-3.5 text-[#00A878]" />
               <span>{t.navProjects}</span>
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform ${projectsMegaOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-150 ${projectsMegaOpen ? 'rotate-180' : ''}`} />
+              {(activeTab === 'solutions' || activeTab === 'calculator' || projectsMegaOpen) && (
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#00A878]" />
+              )}
             </button>
           </div>
 
           {/* 4. Servicii */}
           <button
             onClick={() => handleTabChange('solutions')}
-            className={`px-3.5 py-2.5 transition-all whitespace-nowrap cursor-pointer ${
+            className={`px-3.5 py-2.5 relative transition-colors duration-150 whitespace-nowrap cursor-pointer ${
               activeTab === 'services'
-                ? 'text-[#00A878] font-extrabold border-b-2 border-[#00A878] bg-[#00A878]/10'
+                ? 'text-[#00A878] bg-[#00A878]/10'
                 : 'text-slate-300 hover:text-white hover:bg-[#13283A]'
             }`}
           >
             {t.navServices}
+            {activeTab === 'services' && (
+              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#00A878]" />
+            )}
           </button>
 
           {/* 5. Meșteri */}
           <button
             onClick={() => handleTabChange('craftsmen')}
-            className={`px-3.5 py-2.5 transition-all whitespace-nowrap flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3.5 py-2.5 relative transition-colors duration-150 whitespace-nowrap flex items-center gap-1.5 cursor-pointer ${
               activeTab === 'craftsmen'
-                ? 'text-[#00A878] font-extrabold border-b-2 border-[#00A878] bg-[#00A878]/10'
+                ? 'text-[#00A878] bg-[#00A878]/10'
                 : 'text-slate-300 hover:text-white hover:bg-[#13283A]'
             }`}
           >
             <Wrench className="w-3.5 h-3.5 text-[#00A878]" />
             <span>{t.navCraftsmen}</span>
+            {activeTab === 'craftsmen' && (
+              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#00A878]" />
+            )}
           </button>
 
           {/* 6. Profesioniști (Meister & B2B) */}
           <div className="relative group">
             <button
               onClick={() => handleTabChange('meister')}
-              className={`px-3.5 py-2.5 transition-all whitespace-nowrap flex items-center gap-1 cursor-pointer ${
+              className={`px-3.5 py-2.5 relative transition-colors duration-150 whitespace-nowrap flex items-center gap-1 cursor-pointer ${
                 activeTab === 'meister' || activeTab === 'b2b'
-                  ? 'text-[#00A878] font-extrabold border-b-2 border-[#00A878] bg-[#00A878]/10'
+                  ? 'text-[#00A878] bg-[#00A878]/10'
                   : 'text-slate-300 hover:text-white hover:bg-[#13283A]'
               }`}
             >
               <Building2 className="w-3.5 h-3.5 text-[#00A878]" />
               <span>{t.navProfessionals}</span>
               <ChevronDown className="w-3 h-3 opacity-60" />
+              {(activeTab === 'meister' || activeTab === 'b2b') && (
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#00A878]" />
+              )}
             </button>
             <div className="absolute top-full left-0 hidden group-hover:block w-52 bg-white border border-[#D9E2E1] shadow-2xl rounded-2xl py-2 z-50 animate-in fade-in">
               <button
@@ -638,22 +673,25 @@ export const Header: React.FC<HeaderProps> = ({
           {/* 7. Ghiduri & idei */}
           <button
             onClick={() => handleTabChange('editorial')}
-            className={`px-3.5 py-2.5 transition-all whitespace-nowrap flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3.5 py-2.5 relative transition-colors duration-150 whitespace-nowrap flex items-center gap-1.5 cursor-pointer ${
               activeTab === 'guides' || activeTab === 'editorial'
-                ? 'text-[#00A878] font-extrabold border-b-2 border-[#00A878] bg-[#00A878]/10'
+                ? 'text-[#00A878] bg-[#00A878]/10'
                 : 'text-slate-300 hover:text-white hover:bg-[#13283A]'
             }`}
           >
             <BookOpen className="w-3.5 h-3.5" />
             <span>{t.navGuides}</span>
+            {(activeTab === 'guides' || activeTab === 'editorial') && (
+              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#00A878]" />
+            )}
           </button>
 
           {/* Promoții (Separate Amber Highlight) */}
           <button
             onClick={() => handleTabChange('promotii')}
-            className={`ml-auto px-3.5 py-2.5 transition-all whitespace-nowrap flex items-center gap-1 cursor-pointer ${
+            className={`ml-auto px-3.5 py-2.5 relative transition-colors duration-150 whitespace-nowrap flex items-center gap-1 cursor-pointer ${
               activeTab === 'promotii'
-                ? 'text-amber-400 font-extrabold border-b-2 border-amber-400 bg-amber-400/10'
+                ? 'text-amber-400 bg-amber-400/10'
                 : 'text-amber-300 hover:text-amber-200 hover:bg-[#13283A]'
             }`}
           >
@@ -662,6 +700,9 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="bg-[#F4B400] text-[#0D1B2A] text-[9px] font-black px-1.5 py-0.2 rounded-full uppercase ml-0.5">
               PROMO
             </span>
+            {activeTab === 'promotii' && (
+              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-amber-400" />
+            )}
           </button>
 
         </div>

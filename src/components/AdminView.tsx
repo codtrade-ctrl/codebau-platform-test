@@ -152,6 +152,17 @@ export const AdminView: React.FC = () => {
           <BookOpen className="w-4 h-4 text-[#00A878]" />
           <span>Centrul CodeBau (Ghiduri & Articole)</span>
         </button>
+
+        <button
+          onClick={() => {
+            window.history.pushState({}, '', '/admin/catalog-pilot');
+            window.dispatchEvent(new Event('popstate'));
+          }}
+          className="py-3 px-5 border-b-2 border-transparent text-[#00A878] hover:bg-[#EFFAF6] font-black transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer ml-auto"
+        >
+          <Sparkles className="w-4 h-4 text-[#00A878]" />
+          <span>Catalog Pilot PIM (/admin/catalog-pilot) →</span>
+        </button>
       </div>
 
       {activeTab === 'articles' && (

@@ -30,6 +30,7 @@ import { PromotionsPage } from './components/PromotionsPage';
 import { EditorialCenterView } from './components/EditorialCenterView';
 import { ArticleDetailPage } from './components/ArticleDetailPage';
 import { AdminArticlesView } from './components/AdminArticlesView';
+import { CatalogPilotAdminView } from './components/admin/CatalogPilotAdminView';
 import { getProductBySlug, getProductSlug } from './utils/formatters';
 import { defaultCartRepository, getCartSessionId, logTestEvent } from './services/cartRepository';
 import { useLanguage } from './utils/i18n';
@@ -84,6 +85,8 @@ export default function App() {
         setActiveTab('guides');
       } else if (path === '/admin/articole') {
         setActiveTab('admin_articles');
+      } else if (path === '/admin/catalog-pilot' || path.startsWith('/admin/catalog-pilot/')) {
+        setActiveTab('catalog_pilot');
       } else if (path === '/cos') {
         setActiveProductSlug(null);
         setActiveTab('cart');
@@ -1132,6 +1135,11 @@ export default function App() {
         {/* VIEW 9C: ADMIN ARTICLES */}
         {activeTab === 'admin_articles' && (
           <AdminArticlesView />
+        )}
+
+        {/* VIEW 9D: CATALOG PILOT PIM ADMIN */}
+        {activeTab === 'catalog_pilot' && (
+          <CatalogPilotAdminView onBackToSite={() => handleTabChange('catalog')} />
         )}
 
         {/* VIEW 10: STORES & CONTACT */}
