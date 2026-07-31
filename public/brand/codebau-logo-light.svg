@@ -1,22 +1,30 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 120" width="100%" height="100%">
-  <!-- Symbol Mark (White & Teal) -->
+  <defs>
+    <linearGradient id="cbGradLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f97316" />
+      <stop offset="100%" stop-color="#ea580c" />
+    </linearGradient>
+  </defs>
+
+  <!-- Symbol Mark (Orange & Deep Navy) -->
   <g transform="translate(10, 10)">
-    <rect x="0" y="0" width="100" height="100" rx="22" fill="#13283A" stroke="#1A3448" stroke-width="2" />
-    <rect x="4" y="4" width="92" height="92" rx="18" fill="none" stroke="#00A878" stroke-width="2.5" />
+    <rect x="0" y="0" width="100" height="100" rx="22" fill="url(#cbGradLight)" />
+    <rect x="4" y="4" width="92" height="92" rx="18" fill="none" stroke="#ffffff" stroke-opacity="0.25" stroke-width="2.5" />
     
     <!-- C / B construction beam motif -->
-    <path d="M 68 32 L 40 32 C 32 32 28 36 28 44 L 28 56 C 28 64 32 68 40 68 L 68 68" fill="none" stroke="#00A878" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M 68 32 L 40 32 C 32 32 28 36 28 44 L 28 56 C 28 64 32 68 40 68 L 68 68" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 68 32 L 40 32 C 32 32 28 36 28 44 L 28 56 C 28 64 32 68 40 68 L 68 68" fill="none" stroke="#0f172a" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 68 32 L 40 32 C 32 32 28 36 28 44 L 28 56 C 28 64 32 68 40 68 L 68 68" fill="none" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
     
-    <path d="M 48 32 L 68 32 C 73 32 76 35 76 39.5 C 76 44 73 47 68 47 L 48 47 L 70 47 C 75 47 78 50.5 78 55.5 C 78 60.5 75 64 70 64 L 48 64" fill="none" stroke="#00A878" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 48 32 L 68 32 C 73 32 76 35 76 39.5 C 76 44 73 47 68 47 L 48 47 L 70 47 C 75 47 78 50.5 78 55.5 C 78 60.5 75 64 70 64 L 48 64" fill="none" stroke="#0f172a" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
+    <polygon points="80,18 86,28 74,28" fill="#fef08a" />
   </g>
 
-  <!-- Typography for Dark Backgrounds -->
-  <text x="130" y="65" font-family="'Manrope', 'Inter', system-ui, sans-serif" font-weight="900" font-size="44" letter-spacing="-1" fill="#FFFFFF">
-    CODE<tspan fill="#00A878">BAU</tspan>
+  <!-- Typography for Light Backgrounds -->
+  <text x="130" y="65" font-family="'Manrope', 'Inter', system-ui, sans-serif" font-weight="900" font-size="44" letter-spacing="-1" fill="#0f172a">
+    CODE<tspan fill="#f97316">BAU</tspan>
   </text>
   
-  <text x="132" y="92" font-family="'Inter', system-ui, sans-serif" font-weight="700" font-size="12" letter-spacing="2.5" fill="#DDF5EE">
+  <text x="132" y="92" font-family="'Inter', system-ui, sans-serif" font-weight="700" font-size="12" letter-spacing="2.5" fill="#64748b">
     CONSTRUIEȘTE CU ÎNCREDERE
   </text>
 </svg>
